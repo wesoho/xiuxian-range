@@ -43,3 +43,8 @@ desktop.ini
 /tests/*.db
 /xxr_test.db
 /.github/
+
+# ============ 关卡运行时产物（攻击演示写入的文件） ============
+/public/challenges/**/stolen_cookies.txt
+/public/challenges/**/uploads/*
+/public/uploads/*

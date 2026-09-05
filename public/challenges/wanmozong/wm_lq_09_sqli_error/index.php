@@ -16,6 +16,17 @@ try {
     die('数据库连接失败');
 }
 
+// 教学夹具自愈：确保 999 号「隐席长老」存在（Flag 的藏身账号，与数据库随机化保持一致）
+try {
+    if ((int) db()->fetchScalar('SELECT COUNT(*) FROM demo_users WHERE id = 999') === 0) {
+        db()->execute(
+            "INSERT INTO demo_users (id, username, password, email, role) VALUES (999, 'hidden_elder', 'nobody-knows', 'hidden@xiuxian-range.local', 'elder')"
+        );
+    }
+} catch (\Throwable $e) {
+    // 夹具自愈失败不影响演示
+}
+
 $id = $_GET['id'] ?? '1';
 $flag = null;
 

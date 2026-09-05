@@ -17,7 +17,6 @@
                 <li class="nav-item"><a class="nav-link" href="/doufatai"><i class="bi bi-lightning-charge me-1"></i>斗法台</a></li>
                 <li class="nav-item"><a class="nav-link" href="/xuanshang"><i class="bi bi-scroll me-1"></i>悬赏令</a></li>
                 <li class="nav-item"><a class="nav-link" href="/wanbaolou"><i class="bi bi-shop me-1"></i>万宝楼</a></li>
-                <li class="nav-item"><a class="nav-link" href="/about"><i class="bi bi-journal-bookmark me-1"></i>关于</a></li>
                 <?php
                     // 天机阁：隐藏入口。已敲过山门印章（session 或已获彩蛋）的道友可见
                     $__tianjiOpen = false;
@@ -29,8 +28,9 @@
                     }
                 ?>
                 <li class="nav-item<?= $__tianjiOpen ? '' : ' d-none' ?>" id="xxrTianjiNav">
-                    <a class="nav-link" href="/tianji" title="天机阁 · 彩蛋收集册">✨天机</a>
+                    <a class="nav-link" href="/tianji" title="天机阁 · 彩蛋收集册">✨天机阁</a>
                 </li>
+                <li class="nav-item"><a class="nav-link" href="/about"><i class="bi bi-journal-bookmark me-1"></i>关于</a></li>
             </ul>
             <ul class="navbar-nav">
                 <?php if ($user): ?>

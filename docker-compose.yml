@@ -1,0 +1,121 @@
+version: "3.9"
+
+# ============================================
+# 修真网络安全靶场 (XiuXian Range)
+# 一键启动 Web 安全攻防练习平台
+# ============================================
+
+services:
+  # ====== 主应用服务（PHP + Apache） ======
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: xxr-web
+    restart: unless-stopped
+    ports:
+      - "8080:80"      # Web 访问端口（http://localhost:8080）
+    environment:
+      APP_ENV: development
+      APP_DEBUG: "true"
+      APP_NAME: "修真网络安全靶场"
+      DB_HOST: db
+      DB_PORT: "3306"
+      DB_DATABASE: xiuxian_range
+      DB_USERNAME: xiuxian
+      DB_PASSWORD: xiuxian_pass
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+    volumes:
+      - ./public:/var/www/html/public
+      - ./app:/var/www/html/app
+      - ./challenges:/var/www/html/challenges
+      - ./database:/var/www/html/database
+      - ./storage:/var/www/html/storage
+      - ./admin:/var/www/html/admin
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - xxr-net
+
+  # ====== MySQL 数据库 ======
+  db:
+    image: mysql:8.0
+    container_name: xxr-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: xiuxian_range
+      MYSQL_USER: xiuxian
+      MYSQL_PASSWORD: xiuxian_pass
+      TZ: Asia/Shanghai
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --default-authentication-plugin=mysql_native_password
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./database/init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpass"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - xxr-net
+
+  # ====== Redis（用于演示反序列化与排行榜） ======
+  redis:
+    image: redis:7-alpine
+    container_name: xxr-redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    networks:
+      - xxr-net
+
+  # ====== 数据库可视化管理（可选） ======
+  adminer:
+    image: adminer:4.8.1-standalone
+    container_name: xxr-adminer
+    restart: unless-stopped
+    ports:
+      - "8081:8080"
+    environment:
+      ADMINER_DEFAULT_SERVER: db
+    networks:
+      - xxr-net
+
+  # ====== phpMyAdmin（替代 adminer，可二选一） ======
+  # phpmyadmin:
+  #   image: phpmyadmin/phpmyadmin:latest
+  #   container_name: xxr-pma
+  #   restart: unless-stopped
+  #   ports:
+  #     - "8081:80"
+  #   environment:
+  #     PMA_HOST: db
+  #     PMA_PORT: 3306
+  #     MYSQL_ROOT_PASSWORD: rootpass
+  #   networks:
+  #     - xxr-net
+
+volumes:
+  db_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  xxr-net:
+    driver: bridge

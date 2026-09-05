@@ -1,0 +1,217 @@
+/* ============================================================
+   修真网络安全靶场 - 彩蛋系统样式（egg.css）
+   覆盖：灵气特效 / 灵兽 / 天机导航 / 渡劫飞升 / 金光主题 / 通关文牒打印
+   ============================================================ */
+
+/* ---------- 灵气特效（Konami 触发后的飘符） ---------- */
+#xxrQiLayer {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9998;
+    overflow: hidden;
+}
+.xxr-qi-glyph {
+    position: absolute;
+    top: -40px;
+    color: rgba(212, 175, 55, 0.75);
+    text-shadow: 0 0 8px rgba(212, 175, 55, 0.6);
+    animation: xxrQiFall linear infinite;
+    user-select: none;
+}
+@keyframes xxrQiFall {
+    0%   { transform: translateY(-40px) rotate(0deg); opacity: 0; }
+    10%  { opacity: 1; }
+    90%  { opacity: 0.8; }
+    100% { transform: translateY(105vh) rotate(340deg); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+    #xxrQiLayer { display: none; }
+}
+
+/* ---------- 页脚灵兽 ---------- */
+.xxr-crane {
+    position: fixed;
+    bottom: 12px;
+    left: -60px;
+    font-size: 34px;
+    z-index: 9999;
+    cursor: pointer;
+    filter: drop-shadow(0 0 6px rgba(212, 175, 55, 0.8));
+    animation: xxrCraneWalk 22s linear forwards;
+    user-select: none;
+}
+.xxr-crane:hover { transform: scale(1.25); }
+.xxr-crane-caught { animation: none; transition: transform .3s; transform: scale(2) rotate(-12deg); opacity: .2; }
+@keyframes xxrCraneWalk {
+    0%   { left: -60px; }
+    100% { left: 100vw; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .xxr-crane { animation: none; left: 20px; bottom: 20px; }
+}
+
+/* ---------- 天机隐藏导航 ---------- */
+#xxrTianjiNav .nav-link { color: #f0d879; animation: xxrTwinkle 2.4s ease-in-out infinite; }
+@keyframes xxrTwinkle {
+    0%, 100% { text-shadow: 0 0 4px rgba(240, 216, 121, .4); }
+    50%      { text-shadow: 0 0 12px rgba(240, 216, 121, .95); }
+}
+
+/* ---------- 渡劫飞升 ---------- */
+.xxr-btn-tribulation {
+    animation: xxrThunderPulse 1.2s ease-in-out infinite;
+}
+@keyframes xxrThunderPulse {
+    0%, 100% { box-shadow: 0 0 4px rgba(212, 175, 55, .5); }
+    50%      { box-shadow: 0 0 22px rgba(212, 175, 55, 1); }
+}
+
+.xxr-tribulation-stage {
+    position: relative;
+    min-height: 320px;
+    overflow: hidden;
+    border-radius: 12px;
+    background: radial-gradient(ellipse at 50% 100%, #1b2233 0%, #0a0d14 70%);
+}
+.xxr-bolt {
+    position: absolute;
+    top: -20px;
+    width: 3px;
+    height: 0;
+    background: linear-gradient(180deg, #fff 0%, #ffe97a 45%, rgba(255, 233, 122, 0) 100%);
+    filter: drop-shadow(0 0 6px #ffe97a);
+    opacity: 0;
+    transform-origin: top center;
+}
+.xxr-bolt.active {
+    animation: xxrBoltStrike .55s ease-in forwards;
+}
+@keyframes xxrBoltStrike {
+    0%   { height: 0; opacity: 0; transform: rotate(6deg); }
+    20%  { opacity: 1; }
+    55%  { height: 85%; transform: rotate(-4deg); }
+    70%  { opacity: 1; }
+    100% { height: 95%; opacity: 0; transform: rotate(0deg); }
+}
+.xxr-tribulation-stage.shake { animation: xxrShake .3s ease-in-out; }
+@keyframes xxrShake {
+    0%, 100% { transform: translate(0, 0); }
+    25%      { transform: translate(-4px, 2px); }
+    50%      { transform: translate(3px, -3px); }
+    75%      { transform: translate(-2px, 1px); }
+}
+.xxr-ascend-glow {
+    animation: xxrAscendGlow 2.2s ease-out forwards;
+    opacity: 0;
+}
+@keyframes xxrAscendGlow {
+    0%   { opacity: 0; transform: scale(.85); filter: brightness(1); }
+    40%  { opacity: 1; filter: brightness(1.8); }
+    100% { opacity: 1; transform: scale(1); filter: brightness(1); }
+}
+
+/* ---------- 飞升者金光昵称（排行榜） ---------- */
+.xxr-gold-name {
+    background: linear-gradient(90deg, #b8941f, #ffe97a, #b8941f);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-weight: 700;
+    animation: xxrGoldFlow 3s linear infinite;
+}
+.xxr-gold-name::after { content: ' ⚡'; -webkit-text-fill-color: #ffe97a; }
+@keyframes xxrGoldFlow {
+    to { background-position: 200% center; }
+}
+
+/* ---------- 大乘金光主题（飞升解锁） ---------- */
+body.xxr-theme-gold::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9997;
+    box-shadow: inset 0 0 120px rgba(212, 175, 55, 0.18);
+}
+
+/* ---------- 通关文牒（打印样式） ---------- */
+#xxrCertificate {
+    background:
+        radial-gradient(circle at 20% 20%, rgba(212, 175, 55, .12), transparent 40%),
+        radial-gradient(circle at 80% 80%, rgba(212, 175, 55, .12), transparent 40%),
+        #14181f;
+    border: 3px double rgba(212, 175, 55, .75);
+    border-radius: 8px;
+    padding: 2.5rem 2rem;
+}
+#xxrCertificate .xxr-cert-seal {
+    width: 84px;
+    height: 84px;
+    border: 3px solid #c0392b;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #e74c3c;
+    font-weight: 800;
+    font-size: 1.6rem;
+    transform: rotate(-8deg);
+    letter-spacing: 2px;
+}
+@media print {
+    body * { visibility: hidden !important; }
+    #xxrCertificate, #xxrCertificate * { visibility: visible !important; }
+    #xxrCertificate {
+        position: fixed;
+        inset: 0;
+        margin: 0;
+        background: #fff !important;
+        color: #222 !important;
+        border-color: #b8941f;
+    }
+    #xxrCertificate .text-muted { color: #555 !important; }
+    #xxrCertificate .text-gold, #xxrCertificate h2, #xxrCertificate h3 { color: #7a5c00 !important; }
+    .xxr-cert-seal { border-color: #c0392b !important; color: #c0392b !important; }
+}
+
+/* ---------- 谢幕字幕（/dacheng-final） ---------- */
+.xxr-credits-roll {
+    max-height: 420px;
+    overflow: hidden;
+    position: relative;
+}
+.xxr-credits-roll > .xxr-credits-inner {
+    animation: xxrCreditsUp 28s linear infinite;
+}
+.xxr-credits-roll:hover > .xxr-credits-inner { animation-play-state: paused; }
+@keyframes xxrCreditsUp {
+    0%   { transform: translateY(100%); }
+    100% { transform: translateY(-100%); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .xxr-credits-roll { max-height: none; }
+    .xxr-credits-roll > .xxr-credits-inner { animation: none; }
+}
+
+/* ---------- 通用小件 ---------- */
+.xxr-egg-card { border: 1px solid rgba(212, 175, 55, .25); border-radius: 10px; }
+.xxr-egg-locked { opacity: .55; filter: grayscale(.6); }
+.xxr-slip-slot {
+    width: 52px;
+    height: 68px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px dashed rgba(212, 175, 55, .5);
+    border-radius: 6px;
+    font-size: 1.5rem;
+    margin: 0 4px;
+    background: rgba(212, 175, 55, .05);
+}
+.xxr-slip-slot.filled {
+    border-style: solid;
+    background: rgba(212, 175, 55, .16);
+    box-shadow: 0 0 10px rgba(212, 175, 55, .25);
+}

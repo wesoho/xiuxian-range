@@ -1,0 +1,38 @@
+{
+    "name": "xiuxian/range",
+    "description": "修真网络安全靶场 - PHP Web Security Practice Range",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "XiuXian Range Team"
+        }
+    ],
+    "require": {
+        "php": ">=8.2",
+        "ext-pdo": "*",
+        "ext-mysqli": "*",
+        "ext-gd": "*",
+        "ext-mbstring": "*",
+        "ext-xml": "*",
+        "ext-curl": "*",
+        "ext-redis": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "XiuXian\\": "app/"
+        },
+        "files": [
+            "app/Helpers/functions.php",
+            "app/Helpers/security.php",
+            "app/Helpers/response.php"
+        ]
+    },
+    "scripts": {
+        "test": "phpunit"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
+    }
+}

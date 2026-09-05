@@ -44,6 +44,7 @@
                         <p class="mb-2">鸣谢 · 本靶场参考了以下优秀前辈项目</p>
                         <p class="small text-muted mb-1">DVWA · sqli-labs · upload-labs</p>
                         <p class="small text-muted mb-1">Pikachu · OWASP WebGoat · OWASP Juice Shop</p>
+                        <p class="small text-muted mb-1">SSRF-Labs（国光 / ProbiusOfficial）—— 内网横向编成的引路人</p>
                         <p class="small text-muted mb-4">以及所有在深夜里对着源码较劲的安全学习者</p>
                         <hr style="border-color: rgba(212,175,55,.3); max-width: 200px; margin: 1rem auto;">
                         <p class="mb-2">二周目预告</p>

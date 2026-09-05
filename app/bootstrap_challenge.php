@@ -105,6 +105,77 @@ if (!function_exists('xxr_pdo_args')) {
     }
 }
 
+if (!function_exists('xxr_internal_network')) {
+    /**
+     * 模拟内网：SSRF 攻击内网横向的虚拟服务群（借鉴国光 SSRF-Labs 的编排）
+     *
+     * 真实 SSRF 页面在收到指向模拟内网网段（172.72.23.x）或 hosts 文件的请求时，
+     * 返回虚拟服务的响应——无需额外容器/主机即可还原「SSRF → 内网发现 → 横向」
+     * 的完整攻击链。返回 null 表示不属于模拟内网，调用方自行处理（真实请求）。
+     *
+     * 拓扑：
+     *   file:///etc/hosts                      -> 内网发现（hosts 清单）
+     *   http://172.72.23.22/shell.php?cmd=     -> 青云宗·灵脉控制台（命令执行）
+     *   http://172.72.23.23/?id=               -> 轮回宗·轮回殿（SQL 注入）
+     *   dict://172.72.23.27:6379/info          -> 万魔宗·赤炎缓存（Redis 未授权）
+     *   dict://172.72.23.27:6379/get:secret    -> Redis 读 key
+     *   gopher://172.72.23.27:6379/_...        -> gopher 打 Redis
+     *
+     * @param string $url 玩家提交的 SSRF 目标
+     * @param string $challengeFlag 当前关卡随机 Flag（嵌入对应虚拟服务响应）
+     */
+    function xxr_internal_network(string $url, string $challengeFlag = ''): ?string
+    {
+        $raw = trim($url);
+        $low = strtolower($raw);
+
+        // 内网发现：读 hosts
+        if (preg_match('#^file://.*hosts$#i', $low)) {
+            return "127.0.0.1\tlocalhost\n"
+                . "::1\tlocalhost\n"
+                . "172.72.23.22\tqm-lingmai.qingong.internal\t# 青云宗·灵脉控制台\n"
+                . "172.72.23.23\tlh-lundian.lunhuizong.internal\t# 轮回宗·轮回殿数据库\n"
+                . "172.72.23.27\twm-chiyan.wanmozong.internal\t# 万魔宗·赤炎缓存\n";
+        }
+
+        // 万魔宗·赤炎缓存（Redis 未授权）
+        if (preg_match('#^(dict|gopher)://172\.72\.23\.27(:6379)?#i', $low)) {
+            if (str_contains($low, 'get:secret') || str_contains($low, 'get%3asecret') || str_contains($low, 'get secret')) {
+                return $challengeFlag !== ''
+                    ? "\"secret\"\r\n\"{$challengeFlag}\"\r\n"
+                    : "nil\r\n";
+            }
+            return "# Redis\r\nredis_version:6.2.6\r\nredis_mode:standalone\r\n"
+                . "run_id:xiuxian-chiyan\r\ntcp_port:6379\r\n"
+                . "# 警示：未开启 requirepass，任何来源均可访问（未授权访问）\r\n"
+                . "# 提示：试试 dict://.../get:secret 或 gopher 构造报文\r\n";
+        }
+
+        // 青云宗·灵脉控制台（命令执行）
+        if (preg_match('#^http://172\.72\.23\.22(/|$)#i', $low)) {
+            $cmd = 'whoami';
+            if (preg_match('/[?&]cmd=([^&]+)/i', $raw, $m)) {
+                $cmd = rawurldecode($m[1]);
+            }
+            return "灵脉控制台（内网面板 v2.3）\n"
+                . "命令回显 [{$cmd}]：\n"
+                . "uid=0(root) gid=0(root) groups=0(root)\n"
+                . "/var/www/qingong/config.php -> define('DB_PASS', '{$challengeFlag}');\n"
+                . "# 提示：内网服务未鉴权，配置文件里似乎有数据库口令\n";
+        }
+
+        // 轮回宗·轮回殿（SQL 注入）
+        if (preg_match('#^http://172\.72\.23\.23(/|$)#i', $low)) {
+            if (preg_match('/[?&]id=(-?\d+)(?:\s|%20|%2[Bb])?/i', $raw, $m) && $m[1] !== '1') {
+                return "轮回殿弟子名录（注入命中）：\n[+] secret_realm = 轮回宗祖师手记：\"忘川之下另有洞天，SSRF 可达内网三席。\"\n";
+            }
+            return "轮回殿弟子名录：lunhui@xiuxian-range.internal\n";
+        }
+
+        return null; // 非模拟内网目标
+    }
+}
+
 if (!function_exists('xxr_flag_reveal')) {
     /**
      * 试炼印记：按攻击特征解锁 Flag 展示

@@ -267,6 +267,7 @@ cp .env.example .env
 - [Pikachu](https://github.com/zhuifengshaonianhanlu/pikachu)
 - [OWASP WebGoat](https://github.com/WebGoat/WebGoat)
 - [OWASP Juice Shop](https://github.com/juice-shop/juice-shop)
+- [SSRF-Labs（国光 / ProbiusOfficial）](https://github.com/Pbius/ssrf-labs) —— SSRF 关卡组的「入口 → 内网发现 → 横向」编排借鉴自该靶场
 
 ---
 

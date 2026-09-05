@@ -7,6 +7,8 @@
  * 宗门：qingong
  */
 
+require_once __DIR__ . '/../../../../app/bootstrap_challenge.php';
+
 // 一枚门内样例符文（过期令牌，签名未校验），供演示与观察
 $b64url = static function (string $raw): string {
     return rtrim(strtr(base64_encode($raw), '+/', '-_'), '=');
@@ -17,7 +19,7 @@ $jwtPayload = $b64url(json_encode([
     'role' => 'inner',
     'exp'  => 1700000000,
     'note' => '这枚符文早已过期，但掌门没舍得销毁——他说夹层里藏着一句要紧的话。',
-    'egg'  => 'flag{egg_jwt_rune}',
+    'egg'  => xxr_egg_secret('egg_rune_master'),
 ]));
 $jwtSignature = $b64url('xiuxian-range-demo-signature-not-verified');
 $sampleJwt = $jwtHeader . '.' . $jwtPayload . '.' . $jwtSignature;

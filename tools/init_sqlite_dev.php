@@ -323,6 +323,23 @@ foreach ($challengeIds as $cid) {
 }
 echo "✅ 关卡 Flag 已随机化（" . count($challengeIds) . " 个，16 位随机 hex）\n";
 
+// ============ 2.6 彩蛋口令随机化（防猜测；揭示点经 xxr_egg_secret() 动态渲染） ============
+$eggCodes = $pdo->query('SELECT code FROM easter_eggs WHERE secret IS NOT NULL')->fetchAll(PDO::FETCH_COLUMN);
+$stmtEgg = $pdo->prepare('UPDATE easter_eggs SET secret = ? WHERE code = ?');
+$newSectSecret = '';
+foreach ($eggCodes as $eggCode) {
+    $newSecret = 'flag{egg_' . bin2hex(random_bytes(6)) . '}';
+    $stmtEgg->execute([$newSecret, $eggCode]);
+    if ($eggCode === 'egg_sect_secret') {
+        $newSectSecret = $newSecret;
+    }
+}
+// 同步丹房暗格《宗门秘史》中的口令（QY-JZ-03 UNION 注入彩蛋）
+if ($newSectSecret !== '') {
+    $pdo->exec("UPDATE secret_manual SET content = REPLACE(content, 'flag{egg_sect_manual}', " . $pdo->quote($newSectSecret) . ")");
+}
+echo "✅ 彩蛋口令已随机化（" . count($eggCodes) . " 个）\n";
+
 // ============ 3. 校验 ============
 $challenges = (int) $pdo->query('SELECT COUNT(*) FROM challenges')->fetchColumn();
 $users = (int) $pdo->query('SELECT COUNT(*) FROM users')->fetchColumn();

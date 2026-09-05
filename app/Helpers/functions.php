@@ -277,3 +277,30 @@ if (!function_exists('render_difficulty')) {
         return $stars;
     }
 }
+
+if (!function_exists('xxr_egg_secret')) {
+    /**
+     * 读取彩蛋口令（数据库动态值）
+     *
+     * 彩蛋口令在数据库初始化时随机生成（防猜测），所有揭示点
+     * （robots.txt 路由、?dao=1、?tianji=1、404 藏头诗、秘境、
+     * 关卡夹具等）必须通过本函数动态渲染，禁止硬编码。
+     *
+     * @param string $code 彩蛋代号，如 egg_slip_1 / egg_bookworm
+     */
+    function xxr_egg_secret(string $code): string
+    {
+        static $secrets = null;
+        if ($secrets === null) {
+            $secrets = [];
+            try {
+                foreach (db()->fetchAll('SELECT code, secret FROM easter_eggs WHERE secret IS NOT NULL AND is_active = 1') as $row) {
+                    $secrets[$row['code']] = $row['secret'];
+                }
+            } catch (\Throwable $e) {
+                $secrets = []; // 旧库未安装彩蛋表时降级
+            }
+        }
+        return $secrets[$code] ?? '[SECRET_UNAVAILABLE]';
+    }
+}

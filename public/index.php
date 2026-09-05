@@ -130,13 +130,15 @@ $router->get('/healthz', function (): void {
     exit;
 });
 
-// ---- robots.txt（动态渲染：QY-LQ-02 关卡 Flag 随机化后由数据库注入） ----
+// ---- robots.txt（动态渲染：QY-LQ-02 关卡 Flag 与天机残页口令均随机化后由数据库注入） ----
 $router->get('/robots.txt', function (): void {
     header('Content-Type: text/plain; charset=utf-8');
     try {
         $flag = db()->fetchScalar("SELECT flag FROM challenges WHERE id = 'QY-LQ-02' AND enabled = 1") ?: '[FLAG_UNAVAILABLE]';
+        $slip1 = db()->fetchScalar("SELECT secret FROM easter_eggs WHERE code = 'egg_slip_1' AND is_active = 1") ?: '[SECRET_UNAVAILABLE]';
     } catch (\Throwable $e) {
         $flag = '[FLAG_UNAVAILABLE]';
+        $slip1 = '[SECRET_UNAVAILABLE]';
     }
     echo <<<ROBOTS
 User-agent: *
@@ -164,7 +166,7 @@ Disallow: /.git/
 # 　　连爬虫都要守的规矩，往往是秘密开始的地方。
 # 　　掌门在此留话：去山门之上，云雾深处看一看。
 #
-# 　残页口令：flag{egg_tianji_1}
+# 　残页口令：{$slip1}
 # 　（口令请到 /tianji 天机阁兑换；下一环：在山门 URL 后加 ?dao=1）
 # ------------------------------------------------------------
 

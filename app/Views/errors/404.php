@@ -32,7 +32,7 @@
     </main>
 
     <!-- 「口诀余韵在页根」——残页·肆的口令就藏在你看不到的地方：
-         天机残页·肆 · 口令：flag{egg_tianji_4}
+         天机残页·肆 · 口令：<?= xxr_egg_secret('egg_slip_4') ?>
          藏头「秘境入口」指向的下一站：/mijing
          （口令请到 /tianji 天机阁兑换） -->
     <script src="/assets/js/egg.js" defer></script>

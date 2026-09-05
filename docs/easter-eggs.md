@@ -9,12 +9,13 @@
 ## 一、设计原则
 
 1. **彩蛋只发徽章/称号/装扮，不发闯关积分**（求签/斗法/悬赏的小额灵石除外，且上限极小），保证排行榜公平。
-2. 彩蛋口令（`flag{egg_xxx}`）与正式关卡 flag 完全分离，存于 `easter_eggs.secret`，不影响计分。
+2. 彩蛋口令（`flag{egg_……}`）与正式关卡 flag 完全分离，存于 `easter_eggs.secret`，不影响计分。
 3. 徽章记录在首次授予时由 `EggService` 自动建档（`badges` + `user_badges`），无需手工插入。
-4. **正式关卡 Flag 在每次数据库初始化时随机生成**（16 位随机 hex，见 `tools/init_sqlite_dev.php`
-   / `docker/entrypoint.sh` / `migrations/007_randomize_flags.sql`），关卡页面一律通过
-   `xxr_challenge_flag()` 动态渲染数据库值，**禁止在源码中硬编码**。
-   彩蛋口令保持固定：寻宝链依赖可发现性，且只发徽章、不涉积分，无猜测收益。
+4. **关卡 Flag 与彩蛋口令均在数据库初始化时随机生成**（见 `tools/init_sqlite_dev.php` /
+   `docker/entrypoint.sh` / `migrations/007`、`008`）：
+   - 关卡 Flag：16 位随机 hex，页面经 `xxr_challenge_flag()` 动态渲染，**禁止硬编码**；
+   - 彩蛋口令：`flag{egg_` + 12 位随机 hex + `}`，全部揭示点经 `xxr_egg_secret()` 动态渲染，
+     **禁止硬编码**——不存在可猜的口令，寻宝链必须按线索逐环走。
 
 ## 二、彩蛋清单（答案披露）
 
@@ -30,17 +31,20 @@
 
 ### 口令兑换型（到 /tianji 天机阁兑换）
 
-| 口令 | 彩蛋 | 藏匿位置 |
-|------|------|----------|
-| `flag{egg_elder_note}` | 📖 翻书虫 | QY-LQ-01 藏经阁页面源码**最底部**的第二条注释 |
-| `flag{egg_sect_manual}` | 📜 宗门秘史 | QY-JZ-03 SQLi 关卡：`id=-1 UNION SELECT title,content FROM secret_manual` |
-| `flag{egg_phpinfo_eye}` | 👁 寻宝之眼 | QY-LQ-05 phpinfo 页面底部的仿 phpinfo「XXR_EGG」区块 |
-| `flag{egg_jwt_rune}` | 🔏 符文解者 | QY-HS-03 关卡页「符文样例」JWT 的中段 payload（base64 解码） |
-| `flag{egg_tianji_1}` | 🧾 天机残页·壹 | `/robots.txt` 注释（注意：该文件同时承载 QY-LQ-02 的关卡答案，彩蛋注释在关卡答案下方——修改时两者都要保留） |
-| `flag{egg_tianji_2}` | 🧾 天机残页·贰 | 山门 `/?dao=1` 隐藏区块 |
-| `flag{egg_tianji_3}` | 🧾 天机残页·叁 | 境界地图 `/?tianji=1` 隐藏区块 |
-| `flag{egg_tianji_4}` | 🧾 天机残页·肆 | 404 页面「迷路诗」**源码注释**（藏头=秘境入口 → `/mijing`） |
-| `flag{egg_tianji_5}` | 🧾 天机残页·伍 | `/mijing` 秘境页面 |
+> 所有口令在数据库初始化时随机生成（`flag{egg_` + 12 位 hex），下表为藏匿位置，
+> 具体口令值以各揭示点运行时显示为准。
+
+| 彩蛋 | 藏匿位置 |
+|------|----------|
+| 📖 翻书虫 | QY-LQ-01 藏经阁页面源码**最底部**的第二条注释 |
+| 📜 宗门秘史 | QY-JZ-03 SQLi 关卡：`id=-1 UNION SELECT title,content FROM secret_manual`（暗格内容初始化时同步随机口令） |
+| 👁 寻宝之眼 | QY-LQ-05 phpinfo 页面底部的仿 phpinfo「XXR_EGG」区块 |
+| 🔏 符文解者 | QY-HS-03 关卡页「符文样例」JWT 的中段 payload（base64 解码） |
+| 🧾 天机残页·壹 | `/robots.txt` 注释（注意：该文件同时承载 QY-LQ-02 的关卡答案，彩蛋注释在关卡答案下方——修改时两者都要保留） |
+| 🧾 天机残页·贰 | 山门 `/?dao=1` 隐藏区块 |
+| 🧾 天机残页·叁 | 境界地图 `/?tianji=1` 隐藏区块 |
+| 🧾 天机残页·肆 | 404 页面「迷路诗」**源码注释**（藏头=秘境入口 → `/mijing`） |
+| 🧾 天机残页·伍 | `/mijing` 秘境页面石门 |
 
 ### 寻宝链路线图
 

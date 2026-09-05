@@ -105,6 +105,12 @@ if [ -z "$TABLE_EXISTS" ]; then
         "UPDATE \`$DB_DATABASE\`.challenges SET flag = CONCAT('flag{', SUBSTRING(MD5(RAND()), 1, 16), '}');" || true
     echo "✅ 关卡 Flag 已随机化"
 
+    # 彩蛋口令随机化（揭示点经 xxr_egg_secret() 动态渲染），并同步《宗门秘史》暗格口令
+    mysql -h "$DB_HOST" -u "root" -p"rootpass" -e \
+        "UPDATE \`$DB_DATABASE\`.easter_eggs SET secret = CONCAT('flag{egg_', SUBSTRING(MD5(RAND()), 1, 12), '}') WHERE secret IS NOT NULL;
+         UPDATE \`$DB_DATABASE\`.secret_manual SET content = REPLACE(content, 'flag{egg_sect_manual}', (SELECT t.secret FROM (SELECT secret FROM \`$DB_DATABASE\`.easter_eggs WHERE code = 'egg_sect_secret') t));" || true
+    echo "✅ 彩蛋口令已随机化"
+
     echo "✅ 数据库初始化完成（含 100 关元数据 + 300 条提示 + 彩蛋系统）"
 else
     echo "✅ 数据库已存在，跳过初始化"

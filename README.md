@@ -25,6 +25,7 @@
 - 🏆 **排行榜 / 徽章系统**：积分、宗门排名、成就解锁
 - 🥚 **彩蛋系统**：Konami 秘籍、五环寻宝链、每日求签/答题/悬赏、灵兽图鉴
 - ⚡ **飞升大典**：100 关全通触发九重天雷渡劫动画 + 通关文牒 + 谢幕卷轴
+- 🔐 **Flag 随机化**：关卡 Flag 与彩蛋口令在每次数据库初始化时随机生成，页面全部动态渲染，杜绝猜测与仓库泄露
 
 ---
 
@@ -240,10 +241,14 @@ cp .env.example .env
 ### 添加新关卡流程
 
 1. 在 `public/challenges/<宗门目录>/<关卡目录>/` 下创建目录
-2. 编写 `index.php`、`vulnerable.php`、`secure.php`
-3. 在 `database/seeds/02_challenges.sql` 添加元数据
+2. 编写 `index.php`、`vulnerable.php`、`secure.php`（页面若需展示 Flag，引入
+   `app/bootstrap_challenge.php` 后用 `xxr_challenge_flag()` 动态渲染，**禁止硬编码**；
+   攻击成功后的 Flag 揭示可调用 `xxr_flag_reveal('<签名键>')`）
+3. 在 `database/seeds/02_challenges.sql` 添加元数据（`flag` 列为占位值，
+   初始化时会自动随机化）
 4. 在 `database/seeds/03_hints.sql` 添加提示
-5. 提交 PR
+5. 提交 PR（跑 `php tools/audit_challenges.php` 与 `php tools/sweep_playability.php`
+   验证关卡可通性）
 
 ---
 

@@ -66,7 +66,7 @@ require_once __DIR__ . '/../../../../app/bootstrap_challenge.php';
         既然你把源码翻到了最底下，说明第一条注释根本满足不了你。
 
         天机残卷 · 翻书虫的嘉奖：
-        口令：flag{egg_elder_note}
+        口令：<?= xxr_egg_secret('egg_bookworm') ?>
 
         —— 复制口令，到 /tianji 天机阁兑换，可获【📖 翻书虫】印记。
         ==================================================

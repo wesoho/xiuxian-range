@@ -122,6 +122,9 @@
             const nextBtn = next
                 ? `<a href="/challenge/${esc(next.id)}?phase=learn" class="xxr-btn xxr-btn-primary w-100 mb-2">⚔️ 继续闯关 · ${esc(next.title)}</a>`
                 : `<a href="/leaderboard" class="xxr-btn xxr-btn-primary w-100 mb-2">🏆 全境打通 · 查看修真榜</a>`;
+            const reviewBtn = data.challenge
+                ? `<a href="/challenge/${esc(data.challenge)}?phase=review" class="xxr-btn xxr-btn-secondary w-100 mb-2">📝 写悟道笔记 · 复盘本关</a>`
+                : '';
             document.body.insertAdjacentHTML('beforeend', `
                 <div class="modal fade" id="xxrVictory" tabindex="-1" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered">
@@ -131,6 +134,7 @@
                             <p class="xxr-victory-msg">${esc(data.message || '')}</p>
                             <div class="d-grid mt-3">
                                 ${nextBtn}
+                                ${reviewBtn}
                                 <a href="javascript:location.reload()" class="xxr-btn xxr-btn-secondary w-100 mb-2">↻ 再战本关</a>
                                 <a href="/challenges" class="xxr-btn xxr-btn-secondary w-100">🗺 回到境界地图</a>
                             </div>

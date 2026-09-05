@@ -74,14 +74,15 @@ class ChallengeService
         $ascended = self::checkAscension($userId);
 
         return [
-            'success'  => true,
-            'message'  => ($promotion['promoted'] ?? false)
+            'success'   => true,
+            'message'   => ($promotion['promoted'] ?? false)
                 ? '🎉 通关成功！境界提升至 ' . render_realm($promotion['new_realm']) . '！'
                 : '🎉 通关成功！获得 ' . $points . ' 修真点数！',
-            'points'   => $points,
-            'promoted' => $promotion,
-            'ascended' => $ascended,
-            'next'     => self::nextChallenge($challenge['realm'], (int) $challenge['order_num']),
+            'points'    => $points,
+            'promoted'  => $promotion,
+            'ascended'  => $ascended,
+            'challenge' => $challengeId,
+            'next'      => self::nextChallenge($challenge['realm'], (int) $challenge['order_num']),
         ];
     }
 

@@ -180,19 +180,24 @@ class FunService
     }
 
     /**
-     * 连胜天数（连续得分达标的天数，含今日；以数据库时钟回溯）
+     * 连胜天数（连续得分达标的天数，含今日；以数据库时钟回溯，单查询实现）
      */
     public static function quizStreak(int $userId): int
     {
         $base = strtotime(self::today());
+        $since = date('Y-m-d', $base - 59 * 86400);
+        $rows = self::db()->fetchAll(
+            'SELECT quiz_date FROM quiz_attempts WHERE user_id = ? AND quiz_date >= ? AND score >= ?',
+            [$userId, $since, self::QUIZ_PASS]
+        );
+        if (!$rows) {
+            return 0;
+        }
+        $okDays = array_flip(array_column($rows, 'quiz_date'));
         $streak = 0;
         for ($i = 0; $i < 60; $i++) {
             $day = date('Y-m-d', $base - $i * 86400);
-            $score = self::db()->fetchScalar(
-                'SELECT score FROM quiz_attempts WHERE user_id = ? AND quiz_date = ?',
-                [$userId, $day]
-            );
-            if ($score !== null && (int) $score >= self::QUIZ_PASS) {
+            if (isset($okDays[$day])) {
                 $streak++;
             } else {
                 break;

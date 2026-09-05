@@ -167,6 +167,16 @@ php -S 127.0.0.1:8080 -t public server.php
 
 ## ❓ 常见问题
 
+### Q: 旧版本升级后需要跑哪些迁移？
+A: 按版本顺序对既有库执行（全新部署由初始化脚本自动完成，无需手动）：
+- `006_easter_eggs.sql` —— 彩蛋系统 / 趣味玩法相关表 + `users.ascended_at`
+- `007_randomize_flags.sql` —— 关卡 Flag 随机化（防猜测/防仓库泄露）
+- `008_randomize_egg_secrets.sql` —— 彩蛋口令随机化（同步《宗门秘史》暗格）
+- `009_quiz_score_detail.sql` —— 斗法台逐题解析列
+
+MySQL：`mysql -u root -p xiuxian_range < database/migrations/00X_xxx.sql`
+本地 SQLite：直接重跑 `php tools/init_sqlite_dev.php`（会重置进度并重新随机化）。
+
 ### Q: 启动后访问 500 错误？
 A: 检查 Apache `AllowOverride All` 是否开启，确认 `mod_rewrite` 已启用。
 
@@ -178,6 +188,9 @@ A: 浏览器禁用了 Cookie 或 PHP Session 配置有问题。检查 `storage/s
 
 ### Q: 关卡页面 404？
 A: 确认 `public/challenges/<宗门>/<关卡>/index.php` 文件存在。
+
+### Q: 内置服务器下 CSS/JS 全部 404？
+A: 必须带 `-t public` 启动：`php -S 127.0.0.1:8686 -t public server.php`（docroot 必须是 public，否则静态资源与关卡页面都无法命中）。
 
 ### Q: 如何重置整个环境？
 ```bash

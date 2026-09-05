@@ -61,6 +61,32 @@ use XiuXian\Services\LevelService;
                         <?php endif; ?>
                     </div>
                 </div>
+
+                <div class="bg-dark-translucent p-4 rounded mt-4">
+                    <h5 class="text-gold mb-3">🎖️ 徽章墙（<?= count($badges) ?>）</h5>
+                    <?php if (!$badges): ?>
+                        <p class="small text-muted mb-0">
+                            尚未获得徽章。通关关卡、集齐天机残页、
+                            <a href="/tianji" class="text-gold">探索天机阁的彩蛋</a>
+                            都能获得。
+                        </p>
+                    <?php else: ?>
+                        <div class="row g-2">
+                            <?php foreach ($badges as $b): ?>
+                                <div class="col-6">
+                                    <div class="p-2 rounded text-center" style="border:1px solid rgba(212,175,55,.25); background:rgba(212,175,55,.05);">
+                                        <div style="font-size:1.5rem;"><?= e($b['icon'] ?: '🏅') ?></div>
+                                        <div class="small text-warning"><?= e($b['name']) ?></div>
+                                        <div class="text-muted" style="font-size:.7rem;">
+                                            <?= ['bronze' => '铜纹', 'silver' => '银纹', 'gold' => '金纹', 'platinum' => '铂纹', 'legendary' => '传奇'][$b['tier']] ?? '' ?>
+                                            · <?= e(mb_substr((string) $b['earned_at'], 0, 10)) ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
             </div>
 
             <div class="col-lg-8">

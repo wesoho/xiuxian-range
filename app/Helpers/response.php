@@ -61,14 +61,17 @@ if (!function_exists('view')) {
 if (!function_exists('not_found')) {
     /**
      * 404 响应
+     *
+     * 始终渲染完整 404 视图（迷路诗彩蛋藏于其中，生产环境同样需要）；
+     * 视图渲染失败时降级为一行文本。
      */
     function not_found(string $message = '页面未找到'): void
     {
         http_response_code(404);
         header('Content-Type: text/html; charset=utf-8');
-        if (config('app.debug')) {
+        try {
             view('errors.404', ['message' => $message]);
-        } else {
+        } catch (\Throwable $e) {
             echo '<h1>404 - 道友迷路了</h1><p>' . e($message) . '</p>';
         }
         exit;

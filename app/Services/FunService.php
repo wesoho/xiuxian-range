@@ -238,14 +238,23 @@ class FunService
         }
 
         $earned = $score >= self::QUIZ_PASS ? self::QUIZ_REWARD : 0;
+        $detailJson = json_encode($detail, JSON_UNESCAPED_UNICODE);
         try {
+            // 新库带 score_detail 列（交卷后可回看逐题解析）
             self::db()->execute(
-                'INSERT INTO quiz_attempts (user_id, quiz_date, score, points_earned) VALUES (?, ?, ?, ?)',
-                [$userId, self::today(), $score, $earned]
+                'INSERT INTO quiz_attempts (user_id, quiz_date, score, points_earned, score_detail) VALUES (?, ?, ?, ?, ?)',
+                [$userId, self::today(), $score, $earned, $detailJson]
             );
         } catch (\PDOException $e) {
-            // 双击竞态：另一请求已交卷
-            return ['ok' => false, 'message' => '今日已斗过法，明日再来。'];
+            try {
+                // 旧库无该列：降级为不存解析（迁移 009 可补列）
+                self::db()->execute(
+                    'INSERT INTO quiz_attempts (user_id, quiz_date, score, points_earned) VALUES (?, ?, ?, ?)',
+                    [$userId, self::today(), $score, $earned]
+                );
+            } catch (\PDOException $e2) {
+                return ['ok' => false, 'message' => '今日已斗过法，明日再来。'];
+            }
         }
         if ($earned > 0) {
             \XiuXian\Models\User::addPoints($userId, $earned);

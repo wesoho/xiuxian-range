@@ -293,6 +293,7 @@ CREATE TABLE IF NOT EXISTS `quiz_attempts` (
     `quiz_date`     DATE         NOT NULL,
     `score`         TINYINT      NOT NULL DEFAULT 0,
     `points_earned` INT          NOT NULL DEFAULT 0,
+    `score_detail`  LONGTEXT     DEFAULT NULL COMMENT '逐题解析 JSON（交卷后可回看）',
     PRIMARY KEY (`user_id`, `quiz_date`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='斗法台每日战绩';
 

@@ -27,6 +27,7 @@
         </div>
 
         <?php if ($attempt): ?>
+            <?php $detail = json_decode($attempt['score_detail'] ?? 'null', true); ?>
             <div class="xxr-egg-card p-4 text-center">
                 <h3 class="text-gold"><?= (int) $attempt['score'] ?> / 10</h3>
                 <p class="mb-2">
@@ -38,6 +39,22 @@
                 </p>
                 <p class="small text-muted mb-0">今日已交卷，明日请早。连胜 <?= (int) $streak ?> 天。</p>
             </div>
+            <?php if (is_array($detail)): ?>
+                <div class="mt-3">
+                    <?php foreach ($detail as $i => $d): ?>
+                        <div class="xxr-egg-card p-3 mb-2 <?= !empty($d['correct']) ? 'border-success' : '' ?>">
+                            <strong><?= $i + 1 ?>. <?= e($d['question'] ?? '') ?></strong>
+                            <span class="badge <?= !empty($d['correct']) ? 'bg-success' : 'bg-danger' ?> ms-1"><?= !empty($d['correct']) ? '对' : '错' ?></span>
+                            <?php if (empty($d['correct'])): ?>
+                                <p class="small mb-1 mt-2">你的答案：<?= e($d['pick'] ?? '（未作答）') ?> ｜ 正确答案：<span class="text-warning"><?= e($d['answer'] ?? '') ?></span></p>
+                            <?php endif; ?>
+                            <p class="small text-muted mb-0">💡 <?= e($d['explanation'] ?? '') ?></p>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php else: ?>
+                <p class="text-center small text-muted mt-3">本场答卷未保存逐题解析（旧数据）。</p>
+            <?php endif; ?>
         <?php elseif (!$questions): ?>
             <div class="xxr-egg-card p-4 text-center text-muted">题库暂空，请长老先导入 04_eggs.sql 种子数据。</div>
         <?php else: ?>

@@ -214,6 +214,7 @@ $pdo->exec("CREATE TABLE quiz_attempts (
     quiz_date TEXT NOT NULL,
     score INTEGER DEFAULT 0,
     points_earned INTEGER DEFAULT 0,
+    score_detail TEXT,
     PRIMARY KEY (user_id, quiz_date)
 )");
 $pdo->exec("CREATE TABLE user_bounties (

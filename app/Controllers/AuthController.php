@@ -201,10 +201,25 @@ class AuthController
         $progress = \XiuXian\Models\Progress::listByUser((int) $user['id']);
         $completedCount = \XiuXian\Models\Progress::completedCount((int) $user['id']);
 
+        // 徽章墙（境界徽章 + 彩蛋徽章；旧库未装彩蛋表时静默降级）
+        $badges = [];
+        try {
+            $badges = db()->fetchAll(
+                'SELECT b.code, b.name, b.description, b.icon, b.tier, ub.earned_at
+                 FROM user_badges ub JOIN badges b ON b.id = ub.badge_id
+                 WHERE ub.user_id = ?
+                 ORDER BY ub.earned_at DESC',
+                [(int) $user['id']]
+            );
+        } catch (\Throwable $e) {
+            $badges = [];
+        }
+
         view('auth.profile', [
             'user'           => $user,
             'progress'       => $progress,
             'completedCount' => $completedCount,
+            'badges'         => $badges,
         ]);
     }
 }

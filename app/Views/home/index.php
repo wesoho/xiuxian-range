@@ -60,12 +60,16 @@
         </section>
 
         <?php if (!empty($daoHidden)): ?>
-        <!-- 彩蛋：天机残页·贰（?dao=1 触发） -->
+        <!-- 彩蛋：天机残页·贰（?dao=1 触发，支线任务） -->
         <section class="my-4 p-4 rounded" style="border:1px dashed rgba(212,175,55,.5); background:rgba(212,175,55,.06);">
             <h5 class="text-gold">🌫️ 云雾散去，山门之上浮现出几行小字……</h5>
             <p class="mb-1 text-muted">「修行之人，抬头见道。你既然找到了这里，这一页便赠予你。」</p>
-            <p class="mb-1"><strong class="text-warning">🧾 天机残页·贰 · 口令：<code><?= e(xxr_egg_secret('egg_slip_2')) ?></code></strong></p>
-            <p class="mb-0 small text-muted">（口令请到 <a href="/tianji">✨天机阁</a> 兑换。下一环线索：看地图的时候，试试对地图念一句「天机」的咒语。）</p>
+            <p class="mb-1"><strong class="text-warning">🧾 支线 · 天机残页·贰 · 口令：<code><?= e(xxr_egg_secret('egg_slip_2')) ?></code></strong></p>
+            <p class="mb-0 small text-muted">
+                （这是<strong>支线任务</strong>，不影响主线通关。口令到
+                <a href="/tianji">✨天机阁</a> 兑换可累积残页。
+                下一环的具体操作：打开<strong>境界地图</strong>页面，在网址后面加上 <code>?tianji=1</code>）
+            </p>
         </section>
         <?php endif; ?>
 

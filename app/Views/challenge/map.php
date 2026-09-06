@@ -34,11 +34,14 @@
         </div>
 
         <?php if (!empty($tianjiHidden)): ?>
-        <!-- 彩蛋：天机残页·叁（?tianji=1 触发） -->
+        <!-- 彩蛋：天机残页·叁（?tianji=1 触发，支线任务） -->
         <div class="my-4 p-3 rounded text-center" style="border:1px dashed rgba(212,175,55,.5); background:rgba(212,175,55,.06);">
             <p class="mb-1 text-muted">「地图本无秘密，念咒的人多了，便有了。」</p>
-            <p class="mb-1"><strong class="text-warning">🧾 天机残页·叁 · 口令：<code><?= e(xxr_egg_secret('egg_slip_3')) ?></code></strong></p>
-            <p class="mb-0 small text-muted">（口令请到 <a href="/tianji">✨天机阁</a> 兑换。下一环线索：迷路的时候，把迷路诗每句的第一个字连起来读。）</p>
+            <p class="mb-1"><strong class="text-warning">🧾 支线 · 天机残页·叁 · 口令：<code><?= e(xxr_egg_secret('egg_slip_3')) ?></code></strong></p>
+            <p class="mb-0 small text-muted">
+                （支线任务，不影响主线通关。口令到 <a href="/tianji">✨天机阁</a> 兑换。
+                下一环的具体操作：随便访问一个<strong>不存在的页面</strong>（例如 /abc），在 404 页的源码里读「迷路诗」的注释）
+            </p>
         </div>
         <?php endif; ?>
 

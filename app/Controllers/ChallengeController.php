@@ -157,10 +157,16 @@ class ChallengeController
         }
 
         // 彩蛋口令识别（彩蛋不分关卡归属，优先于解锁门禁）：
-        // 误把彩蛋口令投进关卡 Flag 框时，自动收录并温和提示
+        // 误把彩蛋口令投进关卡 Flag 框时，自动收录并明确告知「这是支线，不是本关答案」
         if (EggService::isEggSecret($submittedFlag)) {
             $claim = EggService::claimSecret((int) $user['id'], $submittedFlag);
-            json_fail($claim['message'], 2, ['egg' => true, 'egg_name' => $claim['egg']['name'] ?? ''], 200);
+            json_fail(
+                '🎁 这是一枚【彩蛋口令】（支线任务，不影响本关通关）——已为你收录。'
+                . '本关的 Flag 是另一个，请按题目指引到对应位置寻找（通常形如 flag{随机字符串}）。',
+                2,
+                ['egg' => true, 'egg_name' => $claim['egg']['name'] ?? '', 'egg_detail' => $claim['message']],
+                200
+            );
         }
 
         // 解锁门禁（长老豁免）：与关卡地图的顺序解锁规则一致

@@ -18,7 +18,7 @@ $jwtPayload = $b64url(json_encode([
     'sub'  => 'qingyun-inner-disciple',
     'role' => 'inner',
     'exp'  => 1700000000,
-    'note' => '这枚符文早已过期，但掌门没舍得销毁——他说夹层里藏着一句要紧的话。',
+    'note' => '这枚符文早已过期，但掌门没舍得销毁——他说夹层里藏着一句要紧的话（支线彩蛋口令，与通关无关）。',
     'egg'  => xxr_egg_secret('egg_rune_master'),
 ]));
 $jwtSignature = $b64url('xiuxian-range-demo-signature-not-verified');

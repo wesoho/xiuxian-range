@@ -22,6 +22,10 @@
 
         <div class="alert alert-info">
             <strong>💡 习道提示：</strong> robots.txt 是搜索引擎爬虫的第一道指令。访问 <a href="/robots.txt" class="text-gold">/robots.txt</a> 查看。
+            <hr>
+            <strong>如何过关：</strong> 本关 Flag 就在 /robots.txt 顶部的【本关答案】区块里（形如 <code>flag{随机字符串}</code>），
+            复制后到 <a href="/challenge/QY-LQ-02" class="text-gold">关卡详情页</a> 提交即可。
+            <small class="d-block mt-1 text-muted">另：robots.txt 里还有前人留下的「支线彩蛋」字条——与通关无关，有兴趣再去研究。</small>
         </div>
 
         <h4>📜 山门规则</h4>

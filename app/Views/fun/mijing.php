@@ -55,7 +55,7 @@
                 <p class="small text-muted">石门上刻着一行字：「把最后一页的名字，念给祭坛听。」</p>
                 <div class="p-3 mb-3 rounded" style="background:rgba(212,175,55,.06); border:1px dashed rgba(212,175,55,.45);">
                     <p class="mb-1 text-muted">「你既已寻到此处，这一页本就属于你。」</p>
-                    <p class="mb-0"><strong class="text-warning">🧾 天机残页·伍 · 口令：<code><?= e(xxr_egg_secret('egg_slip_5')) ?></code></strong></p>
+                    <p class="mb-0"><strong class="text-warning">🧾 支线 · 天机残页·伍 · 口令：<code><?= e(xxr_egg_secret('egg_slip_5')) ?></code></strong>（支线任务）</p>
                 </div>
                 <div class="input-group">
                     <input type="text" class="form-control" id="mijingSecret" placeholder="flag{egg_……}" autocomplete="off">

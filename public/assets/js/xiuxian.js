@@ -103,8 +103,8 @@
                     this.toast(res.message, 'success');
                     this.showVictory(res.data || {});
                 } else if (res.code === 2 && res.data && res.data.egg) {
-                    // 彩蛋口令投进了关卡框：自动收录并提示去天机阁
-                    this.toast(res.message + '（天机阁 → /tianji）', 'info');
+                    // 彩蛋口令投进了关卡框：收录为支线收集，并明确这不是本关答案
+                    this.toast(res.message, 'info');
                 } else {
                     this.toast(res.message, 'error');
                 }

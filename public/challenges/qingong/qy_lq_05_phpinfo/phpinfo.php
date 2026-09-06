@@ -17,5 +17,5 @@ echo "\n<div class=\"phpinfo\" style=\"margin:24px 0;\">\n";
 echo "<h2><a name=\"module_xxr_egg\">Environment</a></h2>\n";
 echo "<h2 class=\"text-gold\">XXR_EGG（隐藏变量）</h2>\n";
 echo "<table>\n<tr><td class=\"e\">XXR_EGG </td><td class=\"v\">" . xxr_egg_secret('egg_treasure_eye') . " </td></tr>\n";
-echo "<tr><td class=\"e\">XXR_EGG_HINT </td><td class=\"v\">这面「配置之镜」照出了不该照出的东西。口令请到 /tianji 天机阁兑换 </td></tr>\n";
+echo "<tr><td class=\"e\">XXR_EGG_HINT </td><td class=\"v\">支线彩蛋（与通关无关）：这面「配置之镜」照出了不该照出的东西。口令请到 /tianji 天机阁兑换 </td></tr>\n";
 echo "</table>\n</div>\n";

@@ -266,7 +266,8 @@ class ChallengeController
         $progress = Progress::get((int) $user['id'], $challengeId);
         $used = $progress ? (json_decode($progress['hints_used'] ?? '[]', true) ?: []) : [];
         if (in_array($hintId, array_map('intval', $used), true)) {
-            json_ok(['content' => $hint['content']], '提示已解锁');
+            $balance = (int) db()->fetchScalar('SELECT total_points FROM users WHERE id = ?', [(int) $user['id']]);
+            json_ok(['content' => $hint['content'], 'balance' => $balance], '提示已解锁');
         }
 
         // 弱提示免费；其余原子扣分（余额不足时影响行数为 0）
@@ -286,7 +287,8 @@ class ChallengeController
         Progress::recordHintUsed((int) $user['id'], $challengeId, $hintId);
         logger()->challenge($user['id'], $challengeId, 'view_hint', ['hint_id' => $hintId, 'level' => $hint['level']]);
 
-        json_ok(['content' => $hint['content']], '提示已解锁');
+        $balance = (int) db()->fetchScalar('SELECT total_points FROM users WHERE id = ?', [(int) $user['id']]);
+        json_ok(['content' => $hint['content'], 'balance' => $balance], '提示已解锁');
     }
 
     /**

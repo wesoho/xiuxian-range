@@ -58,6 +58,18 @@
                                 return { code: 1, message: '页面已过期，请刷新页面后重试' };
                             });
                     }
+                    // 积分实时同步：任何携带 balance 的响应自动刷新导航栏显示
+                    if (res && res.data && typeof res.data.balance === 'number') {
+                        const pts = document.getElementById('xxrPoints');
+                        if (pts) {
+                            const old = pts.textContent;
+                            pts.textContent = res.data.balance + ' 点';
+                            if (old !== pts.textContent) {
+                                pts.classList.add('xxr-points-flash');
+                                setTimeout(() => pts.classList.remove('xxr-points-flash'), 900);
+                            }
+                        }
+                    }
                     return res;
                 })
                 .catch(() => ({ code: 1, message: '网络异常，请稍后再试' }));

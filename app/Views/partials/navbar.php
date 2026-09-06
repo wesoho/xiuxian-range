@@ -37,7 +37,7 @@
                     <li class="nav-item">
                         <span class="nav-link xxr-realm-badge">
                             <?= e(render_realm($user['realm_level'])) ?>
-                            <span class="badge bg-warning text-dark ms-1"><?= (int) $user['total_points'] ?> 点</span>
+                            <span class="badge bg-warning text-dark ms-1" id="xxrPoints" title="修真点数（随获取/消耗实时同步）"><?= (int) $user['total_points'] ?> 点</span>
                         </span>
                     </li>
                     <li class="nav-item dropdown">

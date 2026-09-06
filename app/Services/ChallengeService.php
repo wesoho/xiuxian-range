@@ -79,6 +79,7 @@ class ChallengeService
                 ? '🎉 通关成功！境界提升至 ' . render_realm($promotion['new_realm']) . '！'
                 : '🎉 通关成功！获得 ' . $points . ' 修真点数！',
             'points'    => $points,
+            'balance'   => (int) User::find($userId)['total_points'],
             'promoted'  => $promotion,
             'ascended'  => $ascended,
             'challenge' => $challengeId,

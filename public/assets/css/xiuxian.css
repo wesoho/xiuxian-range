@@ -980,3 +980,13 @@ h3, h4, h5, h6 {
     letter-spacing: 0.08em;
     text-indent: 0;
 }
+
+/* 积分徽章变动闪烁（API 返回 balance 时导航栏实时同步） */
+#xxrPoints.xxr-points-flash {
+    animation: xxrPointsFlash 0.9s ease-out;
+}
+@keyframes xxrPointsFlash {
+    0%   { transform: scale(1);    box-shadow: 0 0 0 0 rgba(255, 215, 0, .8); }
+    40%  { transform: scale(1.25); box-shadow: 0 0 12px 4px rgba(255, 215, 0, .6); }
+    100% { transform: scale(1);    box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); }
+}

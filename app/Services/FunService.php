@@ -146,7 +146,8 @@ class FunService
         if ($points > 0) {
             \XiuXian\Models\User::addPoints($userId, $points);
         }
-        return ['ok' => true, 'message' => $points > 0 ? "签文显现，{$points} 枚灵石入账！" : '签文显现。', 'fortune' => ['key' => $key, 'text' => $text, 'points' => $points]];
+        $balance = (int) self::db()->fetchScalar('SELECT total_points FROM users WHERE id = ?', [$userId]);
+        return ['ok' => true, 'message' => $points > 0 ? "签文显现，{$points} 枚灵石入账！" : '签文显现。', 'fortune' => ['key' => $key, 'text' => $text, 'points' => $points], 'balance' => $balance];
     }
 
     // ============================================================
@@ -266,11 +267,12 @@ class FunService
         }
 
         $streak = self::quizStreak($userId);
+        $balance = (int) self::db()->fetchScalar('SELECT total_points FROM users WHERE id = ?', [$userId]);
         $msg = $earned > 0
             ? "⚔️ 斗法 {$score}/" . count($questions) . " 胜！灵石 +{$earned}" . ($streak > 1 ? "，连胜 {$streak} 天！" : '。')
             : "斗法 {$score}/" . count($questions) . "，未及及格线（" . self::QUIZ_PASS . "），明日再战。";
 
-        return ['ok' => true, 'message' => $msg, 'score' => $score, 'total' => count($questions), 'earned' => $earned, 'streak' => $streak, 'detail' => $detail];
+        return ['ok' => true, 'message' => $msg, 'score' => $score, 'total' => count($questions), 'earned' => $earned, 'streak' => $streak, 'balance' => $balance, 'detail' => $detail];
     }
 
     // ============================================================
@@ -389,7 +391,8 @@ class FunService
         }
         $points = (int) $valid[3];
         \XiuXian\Models\User::addPoints($userId, $points);
-        return ['ok' => true, 'message' => "📜 悬赏「{$valid[1]}」达成，灵石 +{$points}！", 'points' => $points];
+        $balance = (int) self::db()->fetchScalar('SELECT total_points FROM users WHERE id = ?', [$userId]);
+        return ['ok' => true, 'message' => "📜 悬赏「{$valid[1]}」达成，灵石 +{$points}！", 'points' => $points, 'balance' => $balance];
     }
 
     // ============================================================
@@ -452,7 +455,8 @@ class FunService
         } catch (\PDOException $e) {
             return ['ok' => false, 'message' => '此物已在囊中，不必重复购买。'];
         }
-        return ['ok' => true, 'message' => "🎉 已购入「{$item['icon']} {$item['name']}」，可在万宝楼装备。"];
+        $balance = (int) self::db()->fetchScalar('SELECT total_points FROM users WHERE id = ?', [$userId]);
+        return ['ok' => true, 'message' => "🎉 已购入「{$item['icon']} {$item['name']}」，可在万宝楼装备。", 'balance' => $balance];
     }
 
     /**

@@ -35,7 +35,7 @@
 
 ```bash
 # 1. 克隆项目
-git clone https://github.com/yourname/xiuxian-range.git
+git clone https://github.com/wesoho/xiuxian-range.git
 cd xiuxian-range
 
 # 2. 启动（Docker 会自动构建镜像 + 初始化数据库）

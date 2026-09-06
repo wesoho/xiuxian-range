@@ -2,7 +2,7 @@
 # 基于官方 PHP 8.2 Apache 镜像，内置常用扩展以演示各类漏洞
 FROM php:8.2-apache
 
-LABEL maintainer="XiuXian Range <admin@xiuxian-range.local>" \
+LABEL maintainer="李叔AI <admin@xiuxian-range.local>" \
       version="1.0.0" \
       description="修真网络安全靶场 - PHP Web Security Practice Range"
 

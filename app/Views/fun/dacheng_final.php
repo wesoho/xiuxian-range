@@ -38,7 +38,7 @@
                 <div class="xxr-credits-roll">
                     <div class="xxr-credits-inner text-center py-3">
                         <p class="h4 text-gold mb-4">—— 修真网络安全靶场 ——</p>
-                        <p class="mb-2">掌门 / 出题人 / 灵兽驯化师 / 天机阁掌柜<br><span class="text-muted">修真靶场项目组</span></p>
+                        <p class="mb-2">掌门 / 出题人 / 灵兽驯化师 / 天机阁掌柜<br><span class="text-muted">李叔AI</span></p>
                         <p class="mb-2">特别出演<br><span class="text-muted">那只总在页脚散步的灵鹤</span></p>
                         <hr style="border-color: rgba(212,175,55,.3); max-width: 200px; margin: 1rem auto;">
                         <p class="mb-2">鸣谢 · 本靶场参考了以下优秀前辈项目</p>

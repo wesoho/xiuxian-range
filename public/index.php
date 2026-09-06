@@ -3,7 +3,7 @@
  * 修真网络安全靶场 - 入口文件
  *
  * 修真网安靶场 - XiuXian Range v1.0
- * Powered by Native PHP 8.2 + MySQL 8.0
+ * Powered by 李叔AI
  */
 
 declare(strict_types=1);

@@ -41,7 +41,7 @@
         </div>
         <hr style="border-color: rgba(212,175,55,0.18);">
         <div class="text-center small text-muted">
-            © <?= date('Y') ?> 修真靶场 · Powered by PHP <?= PHP_VERSION ?> · <span class="text-warning">愿道友早登大乘！</span>
+            © <?= date('Y') ?> 修真靶场 · Powered by 李叔AI · <span class="text-warning">愿道友早登大乘！</span>
         </div>
     </div>
 </footer>

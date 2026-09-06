@@ -76,7 +76,7 @@ class FunController
         $newly = EggService::award($uid, 'egg_konami');
         if ($newly) {
             logger()->challenge($uid, 'easter_egg', 'egg_konami');
-            json_ok(['newly' => true, 'effect' => 'qi'], '🌩️ 上古禁术生效！灵气充盈周身，彩蛋【禁术·百晓生】已入册！');
+            json_ok(['newly' => true, 'effect' => 'qi'], '🌩️ 上古禁术生效（支线彩蛋）！灵气充盈周身，【禁术·百晓生】已入册！');
         }
         json_ok(['newly' => false, 'effect' => 'qi'], '禁术再次生效，灵气依旧充盈。（彩蛋已在收集册中）');
     }
@@ -91,7 +91,7 @@ class FunController
         $count = EggService::bump($uid, 'crane_caught');
         $newly = EggService::award($uid, 'egg_crane');
         $msg = $newly
-            ? "🦢 灵鹤束手就擒！【灵兽饲养员】印记已入册（已捕获 {$count} 次）。"
+            ? "🦢 灵鹤束手就擒（支线彩蛋）！【灵兽饲养员】印记已入册（已捕获 {$count} 次）。"
             : "🦢 灵鹤抖了抖翅膀飞走了……但图鉴上又多了一笔（已捕获 {$count} 次）。";
         json_ok(['newly' => $newly, 'count' => $count], $msg);
     }
@@ -103,7 +103,7 @@ class FunController
             json_fail('山门都被你敲晕了，稍后再来。');
         }
         session()->set('tianji_revealed', true);
-        json_ok(['revealed' => true], '✨ 敲门声惊动了天机阁，导航栏悄悄多了一个入口……');
+        json_ok(['revealed' => true], '✨ 敲门声惊动了天机阁（支线彩蛋），导航栏悄悄多了一个入口……');
     }
 
     // ============================================================

@@ -23,8 +23,9 @@ $id = $_GET['id'] ?? '1';
         </form>
 
         <div class="xxr-narrative mt-3">
-            <strong>🧪 丹童小声说：</strong> 师父查弟子名册时嫌参数化麻烦，一直是拿字符串拼出来的。
-            听说名册库的暗格里还压着一部《宗门秘史》，表名里带个 <code>manual</code>——不过那是给"会顺便多查一张表的人"看的。
+            <strong>🧪 丹童小声说：</strong> 师父查弟子名册时嫌参数化麻烦，一直是拿字符串拼出来的——
+            这就是要攻的破绽。<span class="text-muted">另：名册库的暗格里似乎还压着一部《宗门秘史》
+            （支线彩蛋，与本关通关无关，有兴趣的道友再去翻），表名里带个 <code>manual</code>。</span>
         </div>
 
         <?php if (isset($_GET['id'])): ?>

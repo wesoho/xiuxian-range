@@ -150,8 +150,8 @@
         var style = 'color:#d4af37;font-size:16px;font-weight:bold;text-shadow:1px 1px 0 #000;';
         console.log('%c⚔️ 修真网络安全靶场 ⚔️', style);
         console.log('%c此身修行，尽在指尖。别看控制台了，快去闯关。', 'color:#8fa8c8');
-        console.log('%c🧾 「天机残页·壹」的线索：连掌门招徕爬虫都要先立规矩——去读读他写下的规矩。', 'color:#d4af37');
-        console.log('%c（集齐五张残页，秘境自开。口令请到 /tianji 天机阁兑换）', 'color:#666');
+        console.log('%c🧾 「天机残页·壹」的线索（支线彩蛋，与通关无关）：连掌门招徕爬虫都要先立规矩——去读读他写下的规矩。', 'color:#d4af37');
+        console.log('%c（支线任务：集齐五张残页，秘境自开。口令请到 /tianji 天机阁兑换。主线闯关不受影响）', 'color:#666');
     })();
 
     // ---------- 4. 页脚灵兽 ----------
@@ -161,12 +161,14 @@
 
     function spawnCrane() {
         if (craneSpawned || !document.body) return;
+        // 弹窗打开时不刷灵兽（避免遮挡通关弹窗等界面）
+        if (document.querySelector('.modal.show')) { craneSpawned = false; setTimeout(spawnCrane, 60 * 1000); return; }
         craneSpawned = true;
 
         var crane = document.createElement('div');
         crane.className = 'xxr-crane';
         crane.textContent = CRANES[Math.floor(Math.random() * CRANES.length)];
-        crane.title = '一只灵兽路过……快点它！';
+        crane.title = '一只灵兽路过……快点它！（支线彩蛋，与通关无关）';
         crane.addEventListener('click', function () {
             crane.classList.add('xxr-crane-caught');
             post('/egg/crane', {}).then(function (res) {

@@ -156,16 +156,23 @@ class FunService
 
     /**
      * 今日十题（全场同题，便于同门切磋）
+     *
+     * 进程内静态缓存（按日期隔离）：36 行全表在一天内只查一次
      */
     public static function todayQuiz(): array
     {
-        $rows = self::db()->fetchAll(
-            'SELECT id, category, question, options, answer_idx, explanation FROM quiz_questions'
-        );
-        if (!$rows) {
+        static $cache = null;
+        $today = self::today();
+        if ($cache === null || $cache['date'] !== $today) {
+            $rows = self::db()->fetchAll(
+                'SELECT id, category, question, options, answer_idx, explanation FROM quiz_questions'
+            );
+            $cache = ['date' => $today, 'rows' => $rows ?: []];
+        }
+        if (!$cache['rows']) {
             return [];
         }
-        return self::seededPick($rows, self::QUIZ_COUNT, 'quiz|' . self::today());
+        return self::seededPick($cache['rows'], self::QUIZ_COUNT, 'quiz|' . $today);
     }
 
     /**
@@ -290,7 +297,7 @@ class FunService
     ];
 
     /**
-     * 今日悬赏（3 条，确定性）
+     * 今日悬赏（3 条，确定性；一次查询聚合全部完成态，避免 N+1）
      */
     public static function todayBounties(int $userId): array
     {
@@ -301,6 +308,40 @@ class FunService
         );
         $claimedMap = array_column($claimed, null, 'bounty_key');
 
+        // 一次性聚合所有可能用到的今日统计
+        $start = self::todayStart();
+        $uid = $userId;
+        $sect = '';
+        try {
+            $user = auth()->user();
+            $sect = $user['sect'] ?? '';
+        } catch (\Throwable $e) {
+            // 未登录时调用不会发生（控制器已门禁），此处仅作降级
+        }
+        $stats = self::db()->fetchAll(
+            "SELECT 'completed' AS k, COUNT(*) AS v FROM progress WHERE user_id = :u AND status = 'completed' AND completed_at >= :s
+             UNION ALL
+             SELECT 'distinct_open' AS k, COUNT(DISTINCT challenge_id) AS v FROM challenge_logs WHERE user_id = :u AND action = 'open_challenge' AND created_at >= :s
+             UNION ALL
+             SELECT 'hint' AS k, COUNT(*) AS v FROM challenge_logs WHERE user_id = :u AND action = 'view_hint' AND created_at >= :s
+             UNION ALL
+             SELECT 'cross_sect' AS k, COUNT(*) AS v
+               FROM progress p JOIN challenges c ON c.id = p.challenge_id
+              WHERE p.user_id = :u AND p.status = 'completed' AND p.completed_at >= :s AND c.sect != :sec
+             UNION ALL
+             SELECT 'egg' AS k, COUNT(*) AS v FROM user_easter_eggs WHERE user_id = :u AND earned_at >= :s",
+            [':u' => $uid, ':s' => $start, ':sec' => $sect]
+        );
+        $m = [];
+        foreach ($stats as $r) {
+            $m[$r['k']] = (int) $r['v'];
+        }
+        $completed = $m['completed'] ?? 0;
+        $distinctOpen = $m['distinct_open'] ?? 0;
+        $hintCount = $m['hint'] ?? 0;
+        $crossSect = $m['cross_sect'] ?? 0;
+        $eggCount = $m['egg'] ?? 0;
+
         $result = [];
         foreach ($picked as [$key, $name, $desc, $points]) {
             $result[] = [
@@ -308,45 +349,23 @@ class FunService
                 'name'    => $name,
                 'desc'    => $desc,
                 'points'  => $points,
-                'done'    => self::bountyDone($userId, $key),
+                'done'    => self::bountyDone($key, $completed, $distinctOpen, $hintCount, $crossSect, $eggCount),
                 'claimed' => isset($claimedMap[$key]),
             ];
         }
         return $result;
     }
 
-    /** 悬赏进度判定 */
-    private static function bountyDone(int $userId, string $key): bool
+    /** 悬赏进度判定（一次查出全部计数后纯内存比对，避免循环内再查库） */
+    private static function bountyDone(string $key, int $completed, int $distinctOpen, int $hintCount, int $crossSect, int $eggCount): bool
     {
-        $uid = $userId;
-        $start = self::todayStart();
         switch ($key) {
-            case 'solve_1':
-                return self::completedToday($uid) >= 1;
-            case 'solve_2':
-                return self::completedToday($uid) >= 2;
-            case 'explore_3':
-                return (int) self::db()->fetchScalar(
-                    "SELECT COUNT(DISTINCT challenge_id) FROM challenge_logs WHERE user_id = ? AND action = 'open_challenge' AND created_at >= ?",
-                    [$uid, $start]
-                ) >= 3;
-            case 'hint_1':
-                return (int) self::db()->fetchScalar(
-                    "SELECT COUNT(*) FROM challenge_logs WHERE user_id = ? AND action = 'view_hint' AND created_at >= ?",
-                    [$uid, $start]
-                ) >= 1;
-            case 'cross_sect':
-                $sect = auth()->user()['sect'] ?? '';
-                return (int) self::db()->fetchScalar(
-                    'SELECT COUNT(*) FROM progress p JOIN challenges c ON c.id = p.challenge_id
-                     WHERE p.user_id = ? AND p.status = ? AND p.completed_at >= ? AND c.sect != ?',
-                    [$uid, 'completed', $start, $sect]
-                ) >= 1;
-            case 'egg_1':
-                return (int) self::db()->fetchScalar(
-                    'SELECT COUNT(*) FROM user_easter_eggs WHERE user_id = ? AND earned_at >= ?',
-                    [$uid, $start]
-                ) >= 1;
+            case 'solve_1':     return $completed >= 1;
+            case 'solve_2':     return $completed >= 2;
+            case 'explore_3':   return $distinctOpen >= 3;
+            case 'hint_1':      return $hintCount >= 1;
+            case 'cross_sect':  return $crossSect >= 1;
+            case 'egg_1':       return $eggCount >= 1;
         }
         return false;
     }

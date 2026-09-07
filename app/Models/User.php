@@ -151,15 +151,26 @@ class User
 
     /**
      * 获取排行榜
+     *
+     * 排序：飞升者优先（按飞升时间倒序），未飞升按积分倒序
+     * 缓存：进程内 60 秒静态缓存，避免列表页高频拉库
      */
     public static function leaderboard(int $limit = 20, ?string $sect = null): array
     {
-        $sql = 'SELECT id, username, sect, realm_level, total_points, title, avatar, last_login_at, ascended_at
-                FROM users
-                WHERE role = ?
-                ORDER BY total_points DESC
-                LIMIT ?';
-        return db()->fetchAll($sql, ['user', $limit]);
+        static $cache = null;
+        $cacheKey = $limit . '|' . ($sect ?? '');
+        if (!isset($cache[$cacheKey]) || $cache[$cacheKey]['exp'] < time()) {
+            $sql = 'SELECT id, username, sect, realm_level, total_points, title, avatar, last_login_at, ascended_at
+                    FROM users
+                    WHERE role = ?
+                    ORDER BY (ascended_at IS NULL) ASC, ascended_at DESC, total_points DESC
+                    LIMIT ?';
+            $cache[$cacheKey] = [
+                'exp'  => time() + 60,
+                'rows' => db()->fetchAll($sql, ['user', $limit]),
+            ];
+        }
+        return $cache[$cacheKey]['rows'];
     }
 
     /**

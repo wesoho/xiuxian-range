@@ -59,6 +59,21 @@ docker-compose up -d
 
 ---
 
+## 📸 界面预览
+
+| | |
+|---|---|
+| ![山门首页](docs/screenshots/home.png) | ![境界地图](docs/screenshots/challenges.png) |
+| **山门首页**：修真世界观 + 境界地图 + 三大宗门 | **境界地图**：八阶 100 关，循序渐进 |
+| ![炼气期关卡列表](docs/screenshots/realm.png) | ![关卡试炼](docs/screenshots/challenge-fight.png) |
+| **关卡列表**：难度星级 / 积分 / 通关状态一目了然 | **试炼阶段**：真实靶场环境 + 三级提示 + Flag 提交 |
+| ![悟道复盘](docs/screenshots/challenge-review.png) | ![修真榜](docs/screenshots/leaderboard.png) |
+| **悟道复盘**：完整 Writeup + 漏洞/安全源码对比 | **修真榜**：积分与宗门排名实时竞争 |
+| ![天机阁](docs/screenshots/tianji.png) | |
+| **天机阁**：每日求签、彩蛋收集等趣味玩法 | |
+
+---
+
 ## 📂 项目结构
 
 ```

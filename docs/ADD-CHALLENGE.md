@@ -83,6 +83,7 @@ session_start();
 - ✅ 漏洞要典型、有教学价值
 - ✅ 修真靶场默认 `display_errors=On`，可演示错误回显
 - ✅ 修真靶场默认 `allow_url_include=On`，可演示 RFI
+- ⚠️ 平台支持 MySQL/SQLite 双驱动（Docker 为 MySQL，本地快速启动为 SQLite）：连接用 `xxr_pdo_args()`；提示 Payload 含数据库专属函数（`version()`、`SLEEP()`、`extractvalue`、`INTO OUTFILE`、GBK 宽字节等）时，用 `xxr_driver_pick(MySQL文案, SQLite文案)` 按当前驱动显示对应文案，`xxr_driver_note()` 输出统一的演示环境说明框；提示库文案参照 `tools/generate_hints.php` 的 `sqli_*` 模板做双驱动双写
 - ❌ 不要使用真实生产环境的弱配置（除非教学需要）
 - ❌ 不要引入真实漏洞的 exploit（仅演示漏洞本身）
 
@@ -90,21 +91,19 @@ session_start();
 
 ```php
 <?php
-// vulnerable.php - 数字型 SQL 注入
+require_once __DIR__ . '/../../../../app/bootstrap_challenge.php';
+
+// vulnerable.php - 数字型 SQL 注入（连接参数用 xxr_pdo_args()，MySQL/SQLite 双驱动自适应）
+[$dsn, $user, $pass] = xxr_pdo_args();
+$pdo = new PDO($dsn, $user, $pass, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
+
 $id = $_GET['id'] ?? '1';
 
-try {
-    $pdo = new PDO('mysql:host=db;dbname=xiuxian_range', 'xiuxian', 'xiuxian_pass');
-    
-    // 【漏洞】直接拼接 SQL
-    $stmt = $pdo->query("SELECT username FROM demo_users WHERE id = $id");
-    
-    foreach ($stmt as $row) {
-        echo "<p>弟子：" . htmlspecialchars($row['username']) . "</p>";
-    }
-} catch (PDOException $e) {
-    // 【漏洞】显示错误信息
-    echo "错误：" . $e->getMessage();
+// 【漏洞】直接拼接 SQL
+$stmt = $pdo->query("SELECT username FROM demo_users WHERE id = $id");
+
+foreach ($stmt as $row) {
+    echo "<p>弟子：" . htmlspecialchars($row['username']) . "</p>";
 }
 ```
 

@@ -225,6 +225,8 @@ cp .env.example .env
 # 浏览器访问 http://localhost
 ```
 
+> 💡 本地也支持 SQLite 快速启动（无需 MySQL）：`php tools/init_sqlite_dev.php` 后 `.env` 设 `DB_CONNECTION=sqlite`，详见 docs/INSTALL.md。SQLite 模式下少数 MySQL 专属注入手法（报错取数、时间盲注 SLEEP、INTO OUTFILE、宽字节）由关卡页自动显示适配提示或标注"需 MySQL 环境"。
+
 ---
 
 ## 🔐 安全说明

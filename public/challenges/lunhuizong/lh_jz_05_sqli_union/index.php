@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../../../app/bootstrap_challenge.php';
 /**
  * LH-JZ-05 【轮回宗·筑基】联合试炼
  * 修真叙事：轮回宗的试炼需要你用 UNION 联结两个查询结果。
@@ -6,6 +7,13 @@
  * 难度：L2
  * 宗门：lunhuizong
  */
+$sqliUnionPayload = xxr_driver_pick(
+    "1' UNION SELECT 1,version(),3-- -",
+    "1' UNION SELECT 1,sqlite_version(),3-- -"
+);
+$sqliUnionNote = xxr_db_driver() === 'sqlite'
+    ? xxr_driver_note('当前为 SQLite 演示环境：版本函数用 <code>sqlite_version()</code>（MySQL 为 <code>version()</code>），联合注入手法完全一致；查系统表用 <code>sqlite_master</code>（MySQL 为 <code>information_schema</code>）。')
+    : '';
 ?>
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -24,12 +32,13 @@
         <form method="GET" class="mb-4">
             <div class="input-group">
                 <span class="input-group-text">编号：</span>
-                <input type="text" name="id" class="form-control" placeholder="试试: 1' UNION SELECT 1,version(),3-- -" autofocus>
+                <input type="text" name="id" class="form-control" placeholder="试试: <?= e($sqliUnionPayload) ?>" autofocus>
                 <button class="xxr-btn xxr-btn-primary">查询</button>
             </div>
         </form>
+        <?= $sqliUnionNote ?>
         <div class="alert alert-info mt-4">
-            <strong>💡 习道提示：</strong> UNION 联合注入。Payload: <code>1&#39; UNION SELECT 1,version(),3-- -</code>
+            <strong>💡 习道提示：</strong> UNION 联合注入。Payload: <code><?= e($sqliUnionPayload) ?></code>
             <hr>
             Flag 提交位置：<a href="/challenge/LH-JZ-05" class="text-gold">返回关卡详情页</a> 提交。
         </div>

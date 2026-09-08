@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../../../app/bootstrap_challenge.php';
 /**
  * 【万魔宗·炼虚】SQL通幽
  * 修真叙事：万魔宗通过 SQL 注入直取 Webshell。SQL 注入的最高境界：不仅是读数据，而是直接在 webroot 写入 PHP 文件。
@@ -6,6 +7,9 @@
  * 漏洞类型：SQLi + INTO OUTFILE → GetShell
  * 难度：终极挑战
  */
+$outfileNote = xxr_db_driver() === 'sqlite'
+    ? xxr_driver_note('当前为 SQLite 演示环境：<code>INTO OUTFILE</code> 为 MySQL 专属语法（需 FILE 权限），SQLite 无法用 SQL 直接写文件；可拓展了解 SQLite 的 <code>ATTACH DATABASE</code> 写文件思路。完整 GetShell 体验请使用 Docker MySQL 环境。')
+    : '';
 ?>
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -22,6 +26,8 @@
             <strong>📖 剧情：</strong> 万魔宗通过 SQL 注入直取 Webshell。SQL 注入的最高境界：不仅是读数据，而是直接在 webroot 写入 PHP 文件。
 需要数据库用户具备 FILE 权限，以及对 webroot 路径的写入权限。
         </div>
+
+        <?= $outfileNote ?>
 
         <div class="bg-dark-translucent p-4 rounded mt-4">
             <h5 class="text-gold">🎯 试炼目标</h5>

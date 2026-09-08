@@ -12,5 +12,8 @@ try {
     // 写入内容是 PHP 代码
 } catch (Throwable $e) {
     echo '<div class="xxr-narrative">SQL 执行异常（演示环境）：' . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8') . '</div>';
+    if (xxr_db_driver() === 'sqlite') {
+        echo xxr_driver_note('当前为 SQLite 演示环境：INTO OUTFILE 为 MySQL 专属语法，SQLite 无法用 SQL 直接写文件。完整 GetShell 体验请使用 Docker MySQL 环境。');
+    }
 }
 xxr_flag_reveal('sqli');

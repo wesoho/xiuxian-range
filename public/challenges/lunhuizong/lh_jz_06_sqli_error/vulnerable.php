@@ -20,5 +20,8 @@ try {
 } catch (PDOException $e) {
     echo '<div class="alert alert-danger">' . $e->getMessage() . '</div>';
 }
+if (xxr_db_driver() === 'sqlite') {
+    echo xxr_driver_note('当前为 SQLite 演示环境：extractvalue()/updatexml() 报错取数为 MySQL 专属手法，SQLite 无等价函数；此处错误回显可用于判断后端数据库类型。完整报错注入体验请使用 Docker MySQL 环境。');
+}
 require_once __DIR__ . '/../../../../app/bootstrap_challenge.php';
 xxr_flag_reveal('sqli');

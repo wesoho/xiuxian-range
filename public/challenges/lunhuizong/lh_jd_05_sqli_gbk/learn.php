@@ -24,7 +24,8 @@
         </div>
         <div class="bg-dark-translucent p-4 rounded mt-3">
             <h5 class="text-gold">🛡️ 安全修真心法</h5>
-            <p>使用UTF-8字符集；用addslashes前先检查字符集；推荐参数化</p>
+            <p>使用UTF-8字符集；用addslashes前先检查字符集；推荐参数化。<br>
+            注意：addslashes 仅在 MySQL 下近似可靠（GBK 下还会被宽字节吃掉反斜杠）；SQLite 字符串中反斜杠不是转义符，addslashes 完全不构成防护。</p>
         </div>
         <div class="text-center mt-4">
             <a href="/challenge/LH-JD-05" class="xxr-btn xxr-btn-secondary">← 返回关卡</a>

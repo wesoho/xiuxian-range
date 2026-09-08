@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../../../app/bootstrap_challenge.php';
 /**
  * WM-JD-07 【万魔宗·金丹】禁咒过滤
  * 修真叙事：万魔宗过滤了 union/select 等关键字。
@@ -6,6 +7,7 @@
  * 难度：L3
  * 宗门：wanmozong
  */
+$sqliFilterPayload = '-1 ununionion selselectect 1-- -';
 ?>
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -29,7 +31,8 @@
             </div>
         </form>
         <div class="alert alert-info mt-4">
-            <strong>💡 习道提示：</strong> SQL 注入关键字过滤绕过（双写、内联注释）
+            <strong>💡 习道提示：</strong> SQL 注入关键字过滤绕过。双写 <code>ununionion selselectect</code> 双驱动通用。Payload: <code><?= e($sqliFilterPayload) ?></code>（UNION 列数需与主查询一致）<br>
+            <span style="font-size:12px;color:#8a97a8;">内联注释拼接（uni/**/on）利用 MySQL 词法特性，SQLite 将注释视为空白、不可用。</span>
             <hr>
             Flag 提交位置：<a href="/challenge/WM-JD-07" class="text-gold">返回关卡详情页</a> 提交。
         </div>

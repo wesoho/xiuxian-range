@@ -165,6 +165,21 @@ php -S 127.0.0.1:8080 -t public server.php
 - SQLite 模式与生产 MySQL 模式共用同一套种子数据（`database/init/`），SQL 均已做跨库兼容（引号转义用 `''`，时间用 `CURRENT_TIMESTAMP`）。
 - 提交 Flag、提示购买、境界晋升、排行榜等核心流程在两种模式下均可运行；关卡目录静态页由内置服务器直接返回。
 
+**SQLite 模式下注入关卡教学差异**：
+
+部分 SQL 注入手法是 MySQL 专属，SQLite 本地模式下关卡页会自动显示驱动适配提示（`xxr_driver_pick()` / `xxr_driver_note()`），提示库文案也已双驱动双写：
+
+| 关卡 | SQLite 下的差异 |
+|---|---|
+| LH-JZ-05 联合注入 | 提示自动改用 `sqlite_version()`（MySQL 为 `version()`）；查系统表用 `sqlite_master` |
+| LH-JZ-06 / WM-LQ-09 报错注入 | `extractvalue`/`updatexml` 报错取数为 MySQL 专属，SQLite 无等价函数；可体验报错回显与后端指纹 |
+| WM-JZ-08 时间盲注 | SQLite 无 `SLEEP()`，提示改用重型递归 CTE 制造延迟 |
+| LH-JD-05 宽字节 | GBK 宽字节为 MySQL 专属；且 SQLite 字符串中反斜杠不是转义符，addslashes 完全不防注入 |
+| WM-JD-08 WAF 绕过 | 内联注释拼接（`uni/**/on`）依赖 MySQL 词法特性；SQLite 用黑名单未拦的恒真式（`OR 1=1`）绕过 |
+| WM-LX-03 GetShell | `INTO OUTFILE` 为 MySQL 专属（需 FILE 权限），SQLite 无等价写文件手法 |
+
+需要完整体验报错取数、宽字节、GetShell 的学员请使用方式一/二（Docker MySQL）环境。
+
 ## ❓ 常见问题
 
 ### Q: 旧版本升级后需要跑哪些迁移？
@@ -173,6 +188,7 @@ A: 按版本顺序对既有库执行（全新部署由初始化脚本自动完�
 - `007_randomize_flags.sql` —— 关卡 Flag 随机化（防猜测/防仓库泄露）
 - `008_randomize_egg_secrets.sql` —— 彩蛋口令随机化（同步《宗门秘史》暗格）
 - `009_quiz_score_detail.sql` —— 斗法台逐题解析列
+- `010_hints_dual_driver.sql` —— SQL 注入关卡提示双驱动化（MySQL/SQLite 双写文案）
 
 MySQL：`mysql -u root -p xiuxian_range < database/migrations/00X_xxx.sql`
 本地 SQLite：直接重跑 `php tools/init_sqlite_dev.php`（会重置进度并重新随机化）。

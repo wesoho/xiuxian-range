@@ -29,7 +29,7 @@
             </div>
         </form>
         <div class="alert alert-info mt-4">
-            <strong>💡 习道提示：</strong> 堆叠注入。Payload: <code>1&#39;; SELECT * FROM users-- -</code>
+            <strong>💡 习道提示：</strong> 堆叠注入。Payload: <code>1&#39;; SELECT * FROM demo_users-- -</code>
             <hr>
             Flag 提交位置：<a href="/challenge/LH-JD-04" class="text-gold">返回关卡详情页</a> 提交。
         </div>

@@ -105,6 +105,53 @@ if (!function_exists('xxr_pdo_args')) {
     }
 }
 
+if (!function_exists('xxr_db_driver')) {
+    /**
+     * 当前平台数据库驱动（'mysql' | 'sqlite'），进程内缓存
+     *
+     * 关卡页可据此展示与演示环境匹配的 Payload：部分 SQL 注入手法
+     * （extractvalue 报错取数、SLEEP 延迟、INTO OUTFILE、GBK 宽字节）
+     * 是 MySQL 专属，SQLite 下需用等价手法或仅作标注。
+     */
+    function xxr_db_driver(): string
+    {
+        static $driver = null;
+        if ($driver === null) {
+            try {
+                $driver = (string) config('db.driver');
+            } catch (\Throwable $e) {
+                $driver = 'mysql';
+            }
+            if ($driver !== 'sqlite') {
+                $driver = 'mysql';
+            }
+        }
+        return $driver;
+    }
+}
+
+if (!function_exists('xxr_driver_pick')) {
+    /**
+     * 按当前驱动返回对应文案/Payload（输出前需经 e() 转义）
+     */
+    function xxr_driver_pick(string $mysql, string $sqlite): string
+    {
+        return xxr_db_driver() === 'sqlite' ? $sqlite : $mysql;
+    }
+}
+
+if (!function_exists('xxr_driver_note')) {
+    /**
+     * 统一样式的演示环境说明框（关卡页嵌入用）
+     */
+    function xxr_driver_note(string $msg): string
+    {
+        return '<div style="margin:14px 0;padding:10px 14px;border:1px dashed rgba(212,175,55,.5);'
+            . 'border-radius:6px;color:#c9b06a;font-size:13px;background:rgba(212,175,55,.05);">'
+            . 'ℹ️ ' . $msg . '</div>';
+    }
+}
+
 if (!function_exists('xxr_internal_network')) {
     /**
      * 模拟内网：SSRF 攻击内网横向的虚拟服务群（借鉴国光 SSRF-Labs 的编排）

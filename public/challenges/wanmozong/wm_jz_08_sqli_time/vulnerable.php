@@ -20,7 +20,7 @@ $time = microtime(true) - $start;
 
 echo "查询耗时：{$time}s";
 if ($time > 3) {
-    echo '<div class="alert alert-warning">检测到 SLEEP() 调用</div>';
+    echo '<div class="alert alert-warning">检测到延迟（时间盲注奏效）</div>';
 }
 require_once __DIR__ . '/../../../../app/bootstrap_challenge.php';
 xxr_flag_reveal('sqli');

